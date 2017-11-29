@@ -9,7 +9,7 @@ import java.util.List;
 
 public class BoundTextLayer extends CommonLayer {
 
-	private List<RenderableText> objects = new LinkedList<>();
+	private final List<RenderableText> objects = new LinkedList<>();
 
 	public void add(String text, Color color, Rectangle2D limits, Font font) {
 		objects.add(new RenderableText(text, limits, color, font));

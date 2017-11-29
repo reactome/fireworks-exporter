@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class Node extends FireworksElement {
 
-	private FireworksNode fireworksNode;
+	private final FireworksNode fireworksNode;
 
 	private Set<Edge> parents;
 	private List<Double> exp;

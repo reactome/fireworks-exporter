@@ -6,7 +6,7 @@ import java.util.HashSet;
 
 public class FireworkArgs {
 	private final String format;
-	private String speciesName;
+	private final String speciesName;
 	private String profile;
 	private Double factor = 1.;
 	private Color background;

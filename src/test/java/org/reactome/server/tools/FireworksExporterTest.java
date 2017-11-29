@@ -4,12 +4,11 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.apache.commons.io.IOUtils;
-import org.reactome.server.tools.diagram.data.exception.DeserializationException;
-import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.AnalysisClient;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisException;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisServerError;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisResult;
+import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
 import org.reactome.server.tools.fireworks.exporter.raster.FireworksExporter;
 import org.reactome.server.tools.fireworks.exporter.raster.index.ContentServiceClient;
 
@@ -58,7 +57,7 @@ public class FireworksExporterTest
 			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
 			final BufferedImage image = exporter.render();
 			saveToDisk(args, image);
-		} catch (AnalysisServerError | DeserializationException | IOException | AnalysisException e) {
+		} catch (AnalysisServerError | IOException | AnalysisException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -72,7 +71,7 @@ public class FireworksExporterTest
 			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
 			final BufferedImage image = exporter.render();
 			saveToDisk(args, image);
-		} catch (DeserializationException | IOException | AnalysisServerError | AnalysisException e) {
+		} catch ( IOException | AnalysisServerError | AnalysisException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -88,7 +87,7 @@ public class FireworksExporterTest
 			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
 			final BufferedImage image = exporter.render();
 			saveToDisk(args, image);
-		} catch (DeserializationException | IOException | AnalysisServerError | AnalysisException e) {
+		} catch ( IOException | AnalysisServerError | AnalysisException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -109,7 +108,7 @@ public class FireworksExporterTest
 			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
 			final BufferedImage image = exporter.render();
 			saveToDisk(args, image);
-		} catch (DeserializationException | IOException | AnalysisServerError | AnalysisException e) {
+		} catch ( IOException | AnalysisServerError | AnalysisException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -131,7 +130,7 @@ public class FireworksExporterTest
 			final File file = new File(IMAGE_FOLDER, args.getSpeciesName() + "." + args.getFormat());
 			final FileOutputStream outputStream = new FileOutputStream(file);
 			exporter.renderToGif(outputStream);
-		} catch (DeserializationException | IOException | AnalysisServerError | AnalysisException e) {
+		} catch ( IOException | AnalysisServerError | AnalysisException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}

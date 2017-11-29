@@ -35,7 +35,6 @@ public abstract class CommonLayer implements Layer {
 		}
 	}
 
-	@Override
 	public void clear() {
 		minX = minY = maxY = maxX = null;
 	}

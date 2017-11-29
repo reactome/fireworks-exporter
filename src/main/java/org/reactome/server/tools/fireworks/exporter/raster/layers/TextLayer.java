@@ -16,7 +16,7 @@ public class TextLayer extends CommonLayer {
 
 	private static final double TEXT_DISTANCE = 15;
 
-	private List<RenderableText> objects = new LinkedList<>();
+	private final List<RenderableText> objects = new LinkedList<>();
 
 	@Override
 	public void render(Graphics2D graphics) {
@@ -63,7 +63,7 @@ public class TextLayer extends CommonLayer {
 
 		private final String text;
 		private final Point2D.Double nodePosition;
-		private Color color;
+		private final Color color;
 
 		RenderableText(String text, Point2D.Double nodePosition, Color color) {
 			this.text = text;

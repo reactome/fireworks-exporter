@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class ImageLayer extends CommonLayer {
 
-	private List<ImageLayout> images = new ArrayList<>();
+	private final List<ImageLayout> images = new ArrayList<>();
 
 	public void add(Image image, NodeProperties bounds) {
 		images.add(new ImageLayout(image, bounds));

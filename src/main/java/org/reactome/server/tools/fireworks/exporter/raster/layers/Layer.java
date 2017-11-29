@@ -9,11 +9,9 @@ import java.awt.geom.Rectangle2D;
  *
  * @author Lorente-Arencibia, Pascual (pasculorente@gmail.com)
  */
-public interface Layer {
+interface Layer {
 
 	void render(Graphics2D graphics);
-
-	void clear();
 
 	Rectangle2D getBounds();
 }

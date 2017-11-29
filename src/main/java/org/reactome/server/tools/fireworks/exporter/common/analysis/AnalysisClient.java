@@ -39,7 +39,7 @@ public class AnalysisClient {
 		SERVICE = service;
 	}
 
-	public static FoundElements getFoundElements(String pathway, String token, String resource) throws AnalysisException, AnalysisServerError {
+	public static FoundElements getFoundElements(String pathway, String token, String resource) throws AnalysisException {
 		try {
 			URL url = new URL(SERVER + SERVICE + "/token/" + URLEncoder.encode(token, "UTF8") + "/found/all/" + pathway + "?resource=" + resource);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();

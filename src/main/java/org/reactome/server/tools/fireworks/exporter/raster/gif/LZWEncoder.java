@@ -9,12 +9,12 @@ import java.io.OutputStream;
 
 class LZWEncoder {
 
-	static final int BITS = 12;
-	static final int HSIZE = 5003; // 80% occupancy
+	private static final int BITS = 12;
+	private static final int HSIZE = 5003; // 80% occupancy
 	private static final int EOF = -1;
-	int n_bits; // number of bits/code
-	int maxbits = BITS; // user settable max # bits/code
-	int maxcode; // maximum code, given n_bits
+	private int n_bits; // number of bits/code
+	private final int maxbits = BITS; // user settable max # bits/code
+	private int maxcode; // maximum code, given n_bits
 
 	// GIFCOMPR.C - GIF Image compression routines
 	//
@@ -22,8 +22,8 @@ class LZWEncoder {
 	// David Rowley (mgardi@watdcsu.waterloo.edu)
 
 	// General DEFINEs
-	int maxmaxcode = 1 << BITS; // should NEVER generate this code
-	int[] htab = new int[HSIZE];
+	private final int maxmaxcode = 1 << BITS; // should NEVER generate this code
+	private final int[] htab = new int[HSIZE];
 
 	// GIF Image compression - modified 'compress'
 	//
@@ -35,17 +35,17 @@ class LZWEncoder {
 	// Ken Turkowski (decvax!decwrl!turtlevax!ken)
 	// James A. Woods (decvax!ihnp4!ames!jaw)
 	// Joe Orost (decvax!vax135!petsd!joe)
-	int[] codetab = new int[HSIZE];
-	int hsize = HSIZE; // for dynamic table sizing
-	int free_ent = 0; // first unused entry
+	private final int[] codetab = new int[HSIZE];
+	private final int hsize = HSIZE; // for dynamic table sizing
+	private int free_ent = 0; // first unused entry
 	// block compression parameters -- after all codes are used up,
 	// and compression rate changes, start over.
-	boolean clear_flg = false;
-	int g_init_bits;
-	int ClearCode;
-	int EOFCode;
-	int cur_accum = 0;
-	int cur_bits = 0;
+	private boolean clear_flg = false;
+	private int g_init_bits;
+	private int ClearCode;
+	private int EOFCode;
+	private int cur_accum = 0;
+	private int cur_bits = 0;
 
 	// Algorithm: use open addressing double hashing (no chaining) on the
 	// prefix code / next character combination. We do a variant of Knuth's
@@ -58,12 +58,12 @@ class LZWEncoder {
 	// for the decompressor. Late addition: construct the table according to
 	// file size for noticeable speed improvement on small files. Please direct
 	// questions about this implementation to ames!jaw.
-	int masks[] = {0x0000, 0x0001, 0x0003, 0x0007, 0x000F, 0x001F, 0x003F, 0x007F, 0x00FF, 0x01FF,
+	private final int[] masks = {0x0000, 0x0001, 0x0003, 0x0007, 0x000F, 0x001F, 0x003F, 0x007F, 0x00FF, 0x01FF,
 			0x03FF, 0x07FF, 0x0FFF, 0x1FFF, 0x3FFF, 0x7FFF, 0xFFFF};
 	// Number of characters so far in this 'packet'
-	int a_count;
+	private int a_count;
 	// Define the storage for the packet accumulator
-	byte[] accum = new byte[256];
+	private final byte[] accum = new byte[256];
 
 	// output
 	//
@@ -79,9 +79,10 @@ class LZWEncoder {
 	// Maintain a BITS character long buffer (so that 8 codes will
 	// fit in it exactly). Use the VAX insv instruction to insert each
 	// code in turn. When the buffer fills up empty it and start over.
-	private int imgW, imgH;
-	private byte[] pixAry;
-	private int initCodeSize;
+	private final int imgW;
+	private final int imgH;
+	private final byte[] pixAry;
+	private final int initCodeSize;
 	private int remaining;
 	private int curPixel;
 
@@ -95,7 +96,7 @@ class LZWEncoder {
 
 	// Add a character to the end of the current packet, and if it is 254
 	// characters, flush the packet to disk.
-	void char_out(byte c, OutputStream outs) throws IOException {
+	private void char_out(byte c, OutputStream outs) throws IOException {
 		accum[a_count++] = c;
 		if (a_count >= 254)
 			flush_char(outs);
@@ -104,7 +105,7 @@ class LZWEncoder {
 	// Clear out the hash table
 
 	// table clear for block compress
-	void cl_block(OutputStream outs) throws IOException {
+	private void cl_block(OutputStream outs) throws IOException {
 		cl_hash(hsize);
 		free_ent = ClearCode + 2;
 		clear_flg = true;
@@ -113,12 +114,12 @@ class LZWEncoder {
 	}
 
 	// reset code table
-	void cl_hash(int hsize) {
+	private void cl_hash(int hsize) {
 		for (int i = 0; i < hsize; ++i)
 			htab[i] = -1;
 	}
 
-	void compress(int init_bits, OutputStream outs) throws IOException {
+	private void compress(int init_bits, OutputStream outs) throws IOException {
 		int fcode;
 		int i /* = 0 */;
 		int c;
@@ -202,7 +203,7 @@ class LZWEncoder {
 	}
 
 	// Flush the packet to disk, and reset the accumulator
-	void flush_char(OutputStream outs) throws IOException {
+	private void flush_char(OutputStream outs) throws IOException {
 		if (a_count > 0) {
 			outs.write(a_count);
 			outs.write(accum, 0, a_count);
@@ -210,7 +211,7 @@ class LZWEncoder {
 		}
 	}
 
-	final int MAXCODE(int n_bits) {
+	private int MAXCODE(int n_bits) {
 		return (1 << n_bits) - 1;
 	}
 
@@ -228,7 +229,7 @@ class LZWEncoder {
 		return pix & 0xff;
 	}
 
-	void output(int code, OutputStream outs) throws IOException {
+	private void output(int code, OutputStream outs) throws IOException {
 		cur_accum &= masks[cur_bits];
 
 		if (cur_bits > 0)

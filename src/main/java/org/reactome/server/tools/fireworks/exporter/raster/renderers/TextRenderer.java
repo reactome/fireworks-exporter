@@ -1,11 +1,6 @@
 package org.reactome.server.tools.fireworks.exporter.raster.renderers;
 
-import org.reactome.server.tools.diagram.data.layout.Coordinate;
-import org.reactome.server.tools.diagram.data.layout.NodeProperties;
-import org.reactome.server.tools.diagram.data.layout.impl.NodePropertiesFactory;
-
 import java.awt.*;
-import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,19 +8,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Where the magic of the texts happens. Two methods are provided:
- * <code>drawTextSingleLine()</code> for drawing texts in one line, regardless
- * of the width of the line, and <code>drawText()</code> for drawing the text
- * inside a box, wrapping and shrinking it if necessary.
- *
  * @author Lorente-Arencibia, Pascual (pasculorente@gmail.com)
  */
 public class TextRenderer {
 
 	private static final List<Character> WORD_SPLIT_CHARS = Arrays.asList(':', '.', '-', ',', ')', '/', '+');
-	private static final float SHADOW_OFFSET = 0.5f;
-	private static final Color ANALYSIS_SHADOW_COLOR = Color.GRAY;
-	private static final Color ANALYSIS_TEXT_COLOR = Color.WHITE;
 
 	/**
 	 * Displays text in the assigned space. If the text does not fit in one
@@ -33,9 +20,9 @@ public class TextRenderer {
 	 * lower until the text fits. Each line is centered to the box and the whole
 	 * text is vertically centered.
 	 *
-	 * @param graphics  canvas to write
-	 * @param text      text to display
-	 * @param limits    box where text should be fit
+	 * @param graphics canvas to write
+	 * @param text     text to display
+	 * @param limits   box where text should be fit
 	 */
 	public static void drawText(Graphics2D graphics, String text, Rectangle2D limits) {
 		// Fit the text
@@ -154,20 +141,4 @@ public class TextRenderer {
 		return parts;
 	}
 
-	/**
-	 * Renders the given text in the desired position.
-	 *
-	 * @param graphics canvas to draw into
-	 * @param text     text to draw
-	 * @param position top left position of text
-	 */
-	public static void drawTextSingleLine(Graphics2D graphics, String text, Coordinate position) {
-		drawTextSingleLine(graphics, text, position.getX(), position.getY());
-	}
-
-	private static void drawTextSingleLine(Graphics2D graphics, String text, double x, double y) {
-		final int height = graphics.getFontMetrics().getHeight();
-		final int baseY = (int) (y + height);
-		graphics.drawString(text, (int) x, baseY);
-	}
 }

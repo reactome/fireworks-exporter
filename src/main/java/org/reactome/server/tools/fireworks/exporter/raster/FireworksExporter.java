@@ -1,12 +1,11 @@
 package org.reactome.server.tools.fireworks.exporter.raster;
 
-import org.reactome.server.tools.diagram.data.exception.DeserializationException;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
-import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
+import org.reactome.server.tools.fireworks.exporter.common.ResourcesFactory;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisException;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisServerError;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisType;
-import org.reactome.server.tools.fireworks.exporter.common.ResourcesFactory;
+import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
 import org.reactome.server.tools.fireworks.exporter.common.profiles.FireworksColorProfile;
 import org.reactome.server.tools.fireworks.exporter.common.profiles.ProfilesFactory;
 import org.reactome.server.tools.fireworks.exporter.raster.gif.AnimatedGifEncoder;
@@ -39,13 +38,12 @@ public class FireworksExporter {
 	 * @param args       specs of the resulting diagram.
 	 * @param layoutPath where to find the species layout.
 	 */
-	public FireworksExporter(FireworkArgs args, String layoutPath) throws DeserializationException, AnalysisServerError, AnalysisException {
+	public FireworksExporter(FireworkArgs args, String layoutPath) throws AnalysisServerError, AnalysisException {
 		this.args = args;
 		final FireworksGraph layout = ResourcesFactory.getGraph(layoutPath, args.getSpeciesName());
 		final FireworksColorProfile profile = ProfilesFactory.getProfile(args.getProfile());
-		this.index = new FireworksIndex(layout, profile, args);
-		this.renderer = new FireworksRenderer(layout, canvas, profile, index);
-		renderer.layout();
+		this.index = new FireworksIndex(layout, args);
+		this.renderer = new FireworksRenderer(canvas, profile, index);
 	}
 
 	/**
@@ -53,15 +51,20 @@ public class FireworksExporter {
 	 */
 
 	public BufferedImage render() {
-		if (args.getColumn() != null) {
-			renderer.setCol(args.getColumn());
-		} else renderer.setCol(0);
+		if (args.getColumn() != null) renderer.setCol(args.getColumn());
+		else renderer.setCol(0);
 		final BufferedImage image = createImage();
 		final Graphics2D graphics = createGraphics(image);
 		canvas.render(graphics);
 		return image;
 	}
 
+	/**
+	 * Creates an animated GIF into outputStream.
+	 *
+	 * @param outputStream where to stream the GIF
+	 *
+	 */
 	public void renderToGif(OutputStream outputStream) {
 		if (index.getAnalysis().getType() != AnalysisType.EXPRESSION)
 			throw new IllegalArgumentException("Animated GIF only supported for EXPRESSION analysis");

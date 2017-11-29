@@ -6,21 +6,20 @@ import java.util.Arrays;
 import java.util.List;
 
 public class FireworksCanvas {
-	private FillLayer nodes = new FillLayer();
-	private DrawLayer nodeSelection = new DrawLayer();
-	private DrawLayer edges = new DrawLayer();
-	private DrawLayer edgeSelection = new DrawLayer();
-	private DrawLayer flags = new DrawLayer();
-	private TextLayer text = new TextLayer();
-	private DrawLayer edgeFlags = new DrawLayer();
-	private DrawLayer nodeFlags = new DrawLayer();
-	private FillDrawLayer legendBackground = new FillDrawLayer();
-	private FillLayer legendBar = new FillLayer();
-	private ImageLayer logoLayer = new ImageLayer();
-	private BoundTextLayer infoText = new BoundTextLayer();
-	private BoundTextLayer legendLabels = new BoundTextLayer();
-	private FillLayer tickArrows = new FillLayer();
-	private DrawLayer ticks = new DrawLayer();
+	private final FillLayer nodes = new FillLayer();
+	private final DrawLayer nodeSelection = new DrawLayer();
+	private final DrawLayer edges = new DrawLayer();
+	private final DrawLayer edgeSelection = new DrawLayer();
+	private final TextLayer text = new TextLayer();
+	private final DrawLayer edgeFlags = new DrawLayer();
+	private final DrawLayer nodeFlags = new DrawLayer();
+	private final FillDrawLayer legendBackground = new FillDrawLayer();
+	private final FillLayer legendBar = new FillLayer();
+	private final ImageLayer logoLayer = new ImageLayer();
+	private final BoundTextLayer infoText = new BoundTextLayer();
+	private final BoundTextLayer legendLabels = new BoundTextLayer();
+	private final FillLayer tickArrows = new FillLayer();
+	private final DrawLayer ticks = new DrawLayer();
 
 	private final List<Layer> layers = Arrays.asList(
 			edgeFlags,

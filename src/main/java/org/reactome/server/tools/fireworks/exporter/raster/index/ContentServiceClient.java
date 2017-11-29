@@ -16,7 +16,7 @@ public class ContentServiceClient {
 	private static final String QUERY = "data/pathways/low/diagram/identifier/%s/allForms?speciesId=%s";
 	private static String HOST = "http://localhost";
 	private static String SERVICE = "/ContentService/";
-	private static ObjectMapper mapper = new ObjectMapper();
+	private static final ObjectMapper mapper = new ObjectMapper();
 
 	@SuppressWarnings("unused")
 	public static void setHost(String host) {

@@ -15,15 +15,15 @@ import java.awt.geom.Point2D;
 /**
  * Renders nodes, that's why its called {@link NodeRenderer}
  */
-public class NodeRenderer {
+class NodeRenderer {
 
 	private static final double MIN_NODE_SIZE = 0.025;
 	private static final int NODE_FACTOR = 18;
 	private static final Stroke SELECTION_STROKE = new BasicStroke(0.3f);
 	private static final Stroke FLAG_STROKE = new BasicStroke(0.7f);
-	private FireworksColorProfile profile;
-	private FireworksIndex index;
-	private FireworksCanvas canvas;
+	private final FireworksColorProfile profile;
+	private final FireworksIndex index;
+	private final FireworksCanvas canvas;
 
 	public NodeRenderer(FireworksColorProfile profile, FireworksIndex index, FireworksCanvas canvas) {
 		this.profile = profile;
@@ -33,8 +33,6 @@ public class NodeRenderer {
 
 	/**
 	 * renders node into canvas
-	 *
-	 * @param node
 	 */
 	public void render(Node node) {
 		final double diameter = (node.getFireworksNode().getRatio() + MIN_NODE_SIZE) * NODE_FACTOR;

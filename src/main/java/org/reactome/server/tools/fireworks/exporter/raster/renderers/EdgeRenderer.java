@@ -14,7 +14,7 @@ import java.awt.geom.Path2D;
 /**
  * Renders edges.
  */
-public class EdgeRenderer {
+class EdgeRenderer {
 
 	private static final Stroke DEFAULT_STROKE = new BasicStroke(0.2f);
 	private static final Stroke SELECTION_STROKE = new BasicStroke(0.4f);

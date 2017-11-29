@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class DrawLayer extends CommonLayer {
 
-	private List<DrawObject> objects = new LinkedList<>();
+	private final List<DrawObject> objects = new LinkedList<>();
 
 	public void add(Shape shape, Color color, Stroke stroke) {
 		addShape(shape);

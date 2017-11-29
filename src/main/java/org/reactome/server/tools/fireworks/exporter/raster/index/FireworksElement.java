@@ -6,7 +6,7 @@ public class FireworksElement {
 	private boolean flag;
 	private Double pValue;
 
-	public void setpValue(Double pValue) {
+	void setpValue(Double pValue) {
 		this.pValue = pValue;
 	}
 
@@ -18,7 +18,7 @@ public class FireworksElement {
 		return flag;
 	}
 
-	public void setFlag(boolean flag) {
+	void setFlag(boolean flag) {
 		this.flag = flag;
 	}
 
@@ -26,7 +26,7 @@ public class FireworksElement {
 		return selected;
 	}
 
-	public void setSelected(boolean selected) {
+	void setSelected(boolean selected) {
 		this.selected = selected;
 	}
 }
