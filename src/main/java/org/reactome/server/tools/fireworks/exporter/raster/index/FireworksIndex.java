@@ -12,7 +12,8 @@ public class FireworksIndex {
 	private final FireworksGraph layout;
 	private final FireworksColorProfile profile;
 	private final FireworkArgs args;
-	private Collection<Long> selected = new HashSet<>();
+	private final Collection<Long> flags;
+	private final Collection<Long> selected;
 	private List<Node> nodes = new LinkedList<>();
 	private List<Edge> edges = new LinkedList<>();
 
@@ -21,6 +22,7 @@ public class FireworksIndex {
 		this.profile = profile;
 		this.args = args;
 		selected = getSelected(args.getSelected());
+		flags = getFlags(args.getFlags());
 		index();
 	}
 
@@ -41,6 +43,19 @@ public class FireworksIndex {
 		return sel;
 	}
 
+	private Collection<Long> getFlags(Collection<String> flags) {
+		if (flags == null) return Collections.emptyList();
+		final Set<Long> pathwaysHit = new TreeSet<>();
+		flags.forEach(s -> {
+			final Set<Long> responses = ContentServiceClient.getFlagged(s, layout.getSpeciesId());
+			if (responses == null) return;
+			pathwaysHit.addAll(responses);
+		});
+		System.out.println(pathwaysHit);
+		return pathwaysHit;
+
+	}
+
 	private void index() {
 		layout.getNodes().forEach(fireworksNode -> {
 			final Node node = new Node(fireworksNode);
@@ -54,6 +69,9 @@ public class FireworksIndex {
 			edges.add(edge);
 		});
 		selected.forEach(id -> index.get(id).setSelected(true));
+		// TODO: why ids that are not in fireworks
+		flags.retainAll(index.keySet());
+		flags.forEach(id -> index.get(id).setFlag(true));
 	}
 
 	public List<Node> getNodes() {

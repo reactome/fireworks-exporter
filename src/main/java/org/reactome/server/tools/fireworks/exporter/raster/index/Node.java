@@ -8,7 +8,6 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Node extends FireworksElement {
@@ -16,7 +15,7 @@ public class Node extends FireworksElement {
 	private static final double MIN_NODE_SIZE = 0.025;
 	private static final int NODE_FACTOR = 18;
 	private static final Stroke SELECTION_STROKE = new BasicStroke(0.3f);
-	private static final Stroke FLAG_STROKE = new BasicStroke(0.6f);
+	private static final Stroke FLAG_STROKE = new BasicStroke(0.7f);
 	private FireworksNode node;
 
 	private Set<Edge> from;
@@ -45,6 +44,12 @@ public class Node extends FireworksElement {
 			from.forEach(edge -> edge.setSelected(selected));
 	}
 
+	@Override
+	public void setFlag(boolean flag) {
+		super.setFlag(flag);
+		if (from != null)
+			from.forEach(edge -> edge.setFlag(flag));
+	}
 
 	public FireworksNode getNode() {
 		return node;
@@ -58,7 +63,8 @@ public class Node extends FireworksElement {
 
 		draw(canvas, profile, ellipse);
 		selection(canvas, profile, ellipse);
-		text(canvas, profile);
+		flag(canvas, profile, ellipse);
+		text(canvas);
 	}
 
 	private void draw(FireworksCanvas canvas, FireworksColorProfile profile, Shape ellipse) {
@@ -66,26 +72,17 @@ public class Node extends FireworksElement {
 	}
 
 	private void selection(FireworksCanvas canvas, FireworksColorProfile profile, Shape ellipse) {
-		if (isSelected()) {
+		if (isSelected())
 			canvas.getNodeSelection().add(ellipse, profile.getNode().getSelection(), SELECTION_STROKE);
-		}
 	}
 
-	private void text(FireworksCanvas canvas, FireworksColorProfile profile) {
+	private void flag(FireworksCanvas canvas, FireworksColorProfile profile, Shape ellipse) {
+		if (isFlag())
+			canvas.getNodeFlags().add(ellipse, profile.getNode().getFlag(), FLAG_STROKE);
+	}
+
+	private void text(FireworksCanvas canvas) {
 		if (from == null)
-			canvas.getText().add(node.getName(), Color.BLACK, new Point2D.Double(node.getX(), node.getY()));
-//		double linesSeparation = fontSize * 0.75;
-//		double vSpace = lines.size() * (fontSize + linesSeparation);
-//		for (String line : lines) {
-//			double width = ctx.measureText(line).getWidth();
-//			double x = currentPosition.getX() - width/2;
-//			double y = currentPosition.getY() - getSize() - vSpace;
-//			ctx.fillText(line, x, y);
-//			vSpace -= (fontSize + linesSeparation);
-//		}
-	}
-
-	private List<String> getLines() {
-		return null;
+			canvas.getText().add(node.getName(), new Point2D.Double(node.getX(), node.getY()));
 	}
 }

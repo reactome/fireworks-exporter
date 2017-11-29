@@ -26,6 +26,12 @@ public class Edge extends FireworksElement {
 		from.setSelected(selected);
 	}
 
+	@Override
+	public void setFlag(boolean flag) {
+		super.setFlag(flag);
+		from.setFlag(true);
+	}
+
 	public Node getFrom() {
 		return from;
 	}
@@ -49,6 +55,7 @@ public class Edge extends FireworksElement {
 
 		draw(canvas, profile, path);
 		selection(canvas, profile, path);
+		flag(canvas, profile, path);
 
 	}
 
@@ -60,5 +67,10 @@ public class Edge extends FireworksElement {
 	private void selection(FireworksCanvas canvas, FireworksColorProfile profile, Path2D path) {
 		if (isSelected())
 			canvas.getEdgeSelection().add(path, profile.getEdge().getSelection(), SELECTION_STROKE);
+	}
+
+	private void flag(FireworksCanvas canvas, FireworksColorProfile profile, Path2D path) {
+		if (isFlag())
+			canvas.getEdgeFlags().add(path, profile.getEdge().getFlag(), FLAG_STROKE);
 	}
 }

@@ -6,6 +6,7 @@ import junit.framework.TestSuite;
 import org.reactome.server.tools.diagram.data.exception.DeserializationException;
 import org.reactome.server.tools.fireworks.exporter.api.FireworkArgs;
 import org.reactome.server.tools.fireworks.exporter.raster.FireworksExporter;
+import org.reactome.server.tools.fireworks.exporter.raster.index.ContentServiceClient;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -45,6 +46,21 @@ public class FireworksExporterTest
 		try {
 			args.setFactor(10);
 			args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
+			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
+			final BufferedImage image = exporter.render();
+			final File file = new File(IMAGE_FOLDER, args.getSpeciesName() + "." + args.getFormat());
+			ImageIO.write(image, args.getFormat(), file);
+		} catch (DeserializationException | IOException e) {
+			fail(e.getMessage());
+		}
+	}
+
+	public void testFlags() {
+		ContentServiceClient.setHost("http://reactome.org");
+		final FireworkArgs args = new FireworkArgs("Canis_familiaris", "png");
+		args.setFlags(Arrays.asList("CTP"));
+		args.setFactor(7);
+		try {
 			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
 			final BufferedImage image = exporter.render();
 			final File file = new File(IMAGE_FOLDER, args.getSpeciesName() + "." + args.getFormat());

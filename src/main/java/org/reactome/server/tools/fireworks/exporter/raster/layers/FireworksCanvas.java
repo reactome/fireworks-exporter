@@ -12,11 +12,14 @@ public class FireworksCanvas {
 	private DrawLayer edgeSelection = new DrawLayer();
 	private DrawLayer flags = new DrawLayer();
 	private TextLayer text = new TextLayer();
+	private DrawLayer edgeFlags = new DrawLayer();
+	private DrawLayer nodeFlags = new DrawLayer();
 
 	private final List<Layer> layers = Arrays.asList(
-			flags,
+			edgeFlags,
 			edgeSelection,
 			edges,
+			nodeFlags,
 			nodeSelection,
 			nodes,
 			text
@@ -71,5 +74,13 @@ public class FireworksCanvas {
 
 	public TextLayer getText() {
 		return text;
+	}
+
+	public DrawLayer getEdgeFlags() {
+		return edgeFlags;
+	}
+
+	public DrawLayer getNodeFlags() {
+		return nodeFlags;
 	}
 }

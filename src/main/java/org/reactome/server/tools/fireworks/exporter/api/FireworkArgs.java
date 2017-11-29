@@ -11,6 +11,7 @@ public class FireworkArgs {
 	private Double factor = 1.;
 	private Color background;
 	private Collection<String> selected;
+	private Collection<String> flags;
 
 	public FireworkArgs(String speciesName, String format) {
 		this.speciesName = speciesName;
@@ -48,5 +49,14 @@ public class FireworkArgs {
 	public void setSelected(Collection<String> selected) {
 		if (selected != null)
 			this.selected = new HashSet<>(selected);
+	}
+
+	public Collection<String> getFlags() {
+		return flags;
+	}
+
+	public void setFlags(Collection<String> flags) {
+		if (flags != null)
+			this.flags = new HashSet<>(flags);
 	}
 }
