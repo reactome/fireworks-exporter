@@ -36,8 +36,8 @@ public class FireworksAnalysis {
 	private static final Color BACKGROUND_FILL = new Color(220, 220, 220);
 	private static final Stroke BACKGROUND_STROKE = new BasicStroke(0.5f);
 	private static final Stroke TICK_STROKE = new BasicStroke(0.5f);
-	private static final double LEGEND_WIDTH = 50;
-	private static final double LEGEND_HEIGHT = 350;
+	private static final double LEGEND_WIDTH = 40;
+	private static final double LEGEND_HEIGHT = 250;
 	private static final double LEGEND_TO_DIAGRAM_SPACE = 15;
 	private static final double TEXT_PADDING = 2;
 	private static final double BG_PADDING = 5;
@@ -216,6 +216,7 @@ public class FireworksAnalysis {
 		if (index.getDecorator().getSelected() == null
 				|| index.getDecorator().getSelected().isEmpty()) return;
 		canvas.getTickArrows().clear();
+		canvas.getTicks().clear();
 		for (Long id : index.getDecorator().getSelected()) {
 			final Node node = index.getNode(id);
 			final double val;
@@ -223,7 +224,7 @@ public class FireworksAnalysis {
 				if (node.getExp() == null)
 					continue;
 				final double value = node.getExp().get(col);
-				val = (value - result.getExpression().getMin()) /
+				val = 1 - (value - result.getExpression().getMin()) /
 						(result.getExpression().getMax() - result.getExpression().getMin());
 			} else {
 				if (node.getpValue() == null)
@@ -263,7 +264,7 @@ public class FireworksAnalysis {
 					result.getExpression().getColumnNames().size(),
 					result.getExpression().getColumnNames().get(col));
 		} else
-		text = result.getSummary().getSampleName();
+			text = result.getSummary().getSampleName();
 
 		canvas.getInfoText().clear();
 		canvas.getInfoText().add(text, Color.BLACK, infoBox, FontProperties.DEFAULT_FONT);

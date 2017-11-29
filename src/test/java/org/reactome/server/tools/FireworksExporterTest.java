@@ -16,6 +16,7 @@ import org.reactome.server.tools.fireworks.exporter.raster.index.ContentServiceC
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -107,6 +108,28 @@ public class FireworksExporterTest
 			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
 			final BufferedImage image = exporter.render();
 			saveToDisk(args, image);
+		} catch (DeserializationException | IOException | AnalysisServerError | AnalysisException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+
+	public void testAnimatedGif() {
+		ContentServiceClient.setHost("https://reactomerelease.oicr.on.ca/");
+		AnalysisClient.setServer("http://localhost:8080");
+		AnalysisClient.setService("");
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "gif");
+		args.setFactor(7.);
+		args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
+//		args.setFlags(Arrays.asList("CTP"));
+		args.setProfile("Calcium Salts");
+//		args.setColumn(1);
+		try {
+			args.setToken(createExpressionToken());
+			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
+			final File file = new File(IMAGE_FOLDER, args.getSpeciesName() + "." + args.getFormat());
+			final FileOutputStream outputStream = new FileOutputStream(file);
+			exporter.renderToGif(outputStream);
 		} catch (DeserializationException | IOException | AnalysisServerError | AnalysisException e) {
 			e.printStackTrace();
 			fail(e.getMessage());

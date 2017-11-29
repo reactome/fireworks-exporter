@@ -5,9 +5,11 @@ import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
 import org.reactome.server.tools.fireworks.exporter.api.FireworkArgs;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisException;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisServerError;
+import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisType;
 import org.reactome.server.tools.fireworks.exporter.factory.ResourcesFactory;
 import org.reactome.server.tools.fireworks.exporter.profiles.FireworksColorProfile;
 import org.reactome.server.tools.fireworks.exporter.profiles.ProfilesFactory;
+import org.reactome.server.tools.fireworks.exporter.raster.gif.AnimatedGifEncoder;
 import org.reactome.server.tools.fireworks.exporter.raster.index.FireworksIndex;
 import org.reactome.server.tools.fireworks.exporter.raster.layers.FireworksCanvas;
 import org.reactome.server.tools.fireworks.exporter.raster.properties.FontProperties;
@@ -16,6 +18,7 @@ import org.reactome.server.tools.fireworks.exporter.raster.renderers.FireworksRe
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,6 +31,7 @@ public class FireworksExporter {
 	private final FireworkArgs args;
 	private final FireworksCanvas canvas = new FireworksCanvas();
 	private final FireworksRenderer renderer;
+	private final FireworksIndex index;
 
 	/**
 	 * Initialize a new {@link FireworksExporter}
@@ -39,8 +43,8 @@ public class FireworksExporter {
 		this.args = args;
 		final FireworksGraph layout = ResourcesFactory.getGraph(layoutPath, args.getSpeciesName());
 		final FireworksColorProfile profile = ProfilesFactory.getProfile(args.getProfile());
-		final FireworksIndex index = new FireworksIndex(layout, profile, args);
-		renderer = new FireworksRenderer(layout, canvas, profile, index);
+		this.index = new FireworksIndex(layout, profile, args);
+		this.renderer = new FireworksRenderer(layout, canvas, profile, index);
 		renderer.layout();
 	}
 
@@ -56,6 +60,23 @@ public class FireworksExporter {
 		final Graphics2D graphics = createGraphics(image);
 		canvas.render(graphics);
 		return image;
+	}
+
+	public void renderToGif(OutputStream outputStream) {
+		if (index.getAnalysis().getType() != AnalysisType.EXPRESSION)
+			throw new IllegalArgumentException("Animated GIF only supported for EXPRESSION analysis");
+		final AnimatedGifEncoder encoder = new AnimatedGifEncoder();
+		encoder.setDelay(1000);
+		encoder.setRepeat(0);
+		encoder.start(outputStream);
+		for (int i = 0; i < index.getAnalysis().getResult().getExpression().getColumnNames().size(); i++) {
+			renderer.setCol(i);
+			final BufferedImage image = createImage();
+			final Graphics2D graphics = createGraphics(image);
+			canvas.render(graphics);
+			encoder.addFrame(image);
+		}
+		encoder.finish();
 	}
 
 	private BufferedImage createImage() {
