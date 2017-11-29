@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.geom.Path2D;
 import java.util.List;
 
-import static org.reactome.server.tools.fireworks.exporter.raster.index.Node.P_PVALUE_THRESHOLD;
+import static org.reactome.server.tools.fireworks.exporter.raster.index.Node.P_VALUE_THRESHOLD;
 
 public class Edge extends FireworksElement {
 
@@ -19,10 +19,9 @@ public class Edge extends FireworksElement {
 
 	private final Node from;
 	private final Node to;
-	private Double pValue;
 	private List<Double> exp;
 
-	public Edge(Node from, Node to) {
+	Edge(Node from, Node to) {
 		this.from = from;
 		this.to = to;
 	}
@@ -76,7 +75,7 @@ public class Edge extends FireworksElement {
 			return profile.getEdge().getInitial();
 		if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
 			if (exp != null) {
-				if (pValue <= P_PVALUE_THRESHOLD) {
+				if (getpValue() <= P_VALUE_THRESHOLD) {
 					final double min = index.getAnalysis().getResult().getExpression().getMin();
 					final double max = index.getAnalysis().getResult().getExpression().getMax();
 					final double val = 1 - (exp.get(0) - min) / (max - min);
@@ -85,8 +84,8 @@ public class Edge extends FireworksElement {
 			}
 		} else if (index.getAnalysis().getType() == AnalysisType.OVERREPRESENTATION
 				|| index.getAnalysis().getType() == AnalysisType.SPECIES_COMPARISON) {
-			if (pValue != null && pValue <= P_PVALUE_THRESHOLD) {
-				final double val = pValue / P_PVALUE_THRESHOLD;
+			if (getpValue() != null && getpValue() <= P_VALUE_THRESHOLD) {
+				final double val = getpValue() / P_VALUE_THRESHOLD;
 				return ColorFactory.interpolate(profile.getEdge().getEnrichment(), val);
 			}
 		}
@@ -101,10 +100,6 @@ public class Edge extends FireworksElement {
 	private void flag(FireworksCanvas canvas, FireworksColorProfile profile, Path2D path) {
 		if (isFlag())
 			canvas.getEdgeFlags().add(path, profile.getEdge().getFlag(), FLAG_STROKE);
-	}
-
-	public void setpValue(Double pValue) {
-		this.pValue = pValue;
 	}
 
 	public void setExp(List<Double> exp) {

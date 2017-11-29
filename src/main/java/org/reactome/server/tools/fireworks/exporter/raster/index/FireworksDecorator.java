@@ -7,8 +7,10 @@ import java.util.*;
 
 public class FireworksDecorator {
 
+	private final Collection<Long> selected;
+
 	FireworksDecorator(FireworksIndex index, FireworksGraph layout, FireworkArgs args) {
-		Collection<Long> selected = getSelected(layout, args.getSelected());
+		selected = getSelected(layout, args.getSelected());
 		Collection<Long> flags = getFlags(layout, args.getFlags());
 		selected.forEach(id -> index.getNode(id).setSelected(true));
 		// TODO: why im receiving ids that are not in fireworks
@@ -46,4 +48,7 @@ public class FireworksDecorator {
 
 	}
 
+	public Collection<Long> getSelected() {
+		return selected;
+	}
 }

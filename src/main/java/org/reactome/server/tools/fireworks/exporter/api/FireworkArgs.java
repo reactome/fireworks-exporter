@@ -14,6 +14,7 @@ public class FireworkArgs {
 	private Collection<String> flags;
 	private String token;
 	private String resource;
+	private Integer column;
 
 	public FireworkArgs(String speciesName, String format) {
 		this.speciesName = speciesName;
@@ -84,5 +85,13 @@ public class FireworkArgs {
 
 	public void setResource(String resource) {
 		this.resource = resource;
+	}
+
+	public Integer getColumn() {
+		return column;
+	}
+
+	public void setColumn(Integer column) {
+		this.column = column;
 	}
 }

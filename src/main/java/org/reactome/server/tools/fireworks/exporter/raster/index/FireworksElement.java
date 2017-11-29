@@ -4,6 +4,15 @@ public class FireworksElement {
 
 	private boolean selected;
 	private boolean flag;
+	private Double pValue;
+
+	public void setpValue(Double pValue) {
+		this.pValue = pValue;
+	}
+
+	public Double getpValue() {
+		return pValue;
+	}
 
 	public boolean isFlag() {
 		return flag;

@@ -15,16 +15,15 @@ import java.util.Set;
 
 public class Node extends FireworksElement {
 
+	static final double P_VALUE_THRESHOLD = 0.05;
 	private static final double MIN_NODE_SIZE = 0.025;
 	private static final int NODE_FACTOR = 18;
 	private static final Stroke SELECTION_STROKE = new BasicStroke(0.3f);
 	private static final Stroke FLAG_STROKE = new BasicStroke(0.7f);
-	static final double P_PVALUE_THRESHOLD = 0.05;
 	private FireworksNode node;
 
 	private Set<Edge> from;
 	private Set<Edge> to;
-	private Double pValue;
 	private List<Double> exp;
 
 	Node(FireworksNode node) {
@@ -70,7 +69,7 @@ public class Node extends FireworksElement {
 		draw(canvas, profile, ellipse, index);
 		selection(canvas, profile, ellipse);
 		flag(canvas, profile, ellipse);
-		text(canvas, profile);
+		text(canvas);
 	}
 
 	private void draw(FireworksCanvas canvas, FireworksColorProfile profile, Shape ellipse, FireworksIndex index) {
@@ -83,17 +82,18 @@ public class Node extends FireworksElement {
 			return profile.getNode().getInitial();
 		if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
 			if (exp != null) {
-				if (pValue <= P_PVALUE_THRESHOLD) {
+				if (getpValue() <= P_VALUE_THRESHOLD) {
 					final double min = index.getAnalysis().getResult().getExpression().getMin();
 					final double max = index.getAnalysis().getResult().getExpression().getMax();
 					final double val = 1 - (exp.get(0) - min) / (max - min);
 					return ColorFactory.interpolate(profile.getNode().getExpression(), val);
-				} return profile.getNode().getHit();
+				}
+				return profile.getNode().getHit();
 			}
 		} else if (index.getAnalysis().getType() == AnalysisType.OVERREPRESENTATION
 				|| index.getAnalysis().getType() == AnalysisType.SPECIES_COMPARISON) {
-			if (pValue != null && pValue <= P_PVALUE_THRESHOLD) {
-				final double val = pValue / P_PVALUE_THRESHOLD;
+			if (getpValue() != null && getpValue() <= P_VALUE_THRESHOLD) {
+				final double val = getpValue() / P_VALUE_THRESHOLD;
 				return ColorFactory.interpolate(profile.getNode().getEnrichment(), val);
 			}
 		}
@@ -110,17 +110,17 @@ public class Node extends FireworksElement {
 			canvas.getNodeFlags().add(ellipse, profile.getNode().getFlag(), FLAG_STROKE);
 	}
 
-	private void text(FireworksCanvas canvas, FireworksColorProfile profile) {
+	private void text(FireworksCanvas canvas) {
 		if (from == null) {
 			final Color color = isSelected()
-				? Color.BLUE
-				: Color.BLACK;
+					? Color.BLUE
+					: Color.BLACK;
 			canvas.getText().add(node.getName(), new Point2D.Double(node.getX(), node.getY()), color);
 		}
 	}
 
 	public void setpValue(Double pValue) {
-		this.pValue = pValue;
+		super.setpValue(pValue);
 		if (from != null)
 			this.from.forEach(edge -> edge.setpValue(pValue));
 	}
@@ -129,5 +129,9 @@ public class Node extends FireworksElement {
 		this.exp = exp;
 		if (from != null)
 			from.forEach(edge -> edge.setExp(exp));
+	}
+
+	public List<Double> getExp() {
+		return exp;
 	}
 }

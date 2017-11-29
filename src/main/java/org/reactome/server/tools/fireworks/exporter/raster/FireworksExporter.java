@@ -27,6 +27,7 @@ public class FireworksExporter {
 	private static final Set<String> NO_TRANSPARENT_FORMATS = new HashSet<>(Arrays.asList("jpg", "jpeg", "gif"));
 	private final FireworkArgs args;
 	private final FireworksCanvas canvas = new FireworksCanvas();
+	private final FireworksRenderer renderer;
 
 	/**
 	 * Initialize a new {@link FireworksExporter}
@@ -39,7 +40,7 @@ public class FireworksExporter {
 		final FireworksGraph layout = ResourcesFactory.getGraph(layoutPath, args.getSpeciesName());
 		final FireworksColorProfile profile = ProfilesFactory.getProfile(args.getProfile());
 		final FireworksIndex index = new FireworksIndex(layout, profile, args);
-		final FireworksRenderer renderer = new FireworksRenderer(layout, canvas, profile, index);
+		renderer = new FireworksRenderer(layout, canvas, profile, index);
 		renderer.layout();
 	}
 
@@ -48,6 +49,9 @@ public class FireworksExporter {
 	 */
 
 	public BufferedImage render() {
+		if (args.getColumn() != null) {
+			renderer.setCol(args.getColumn());
+		} else renderer.setCol(0);
 		final BufferedImage image = createImage();
 		final Graphics2D graphics = createGraphics(image);
 		canvas.render(graphics);
@@ -57,8 +61,8 @@ public class FireworksExporter {
 	private BufferedImage createImage() {
 		final double factor = args.getFactor();
 		final Rectangle2D bounds = canvas.getBounds();
-		final int width = (int) (factor * bounds.getWidth() + 0.5);
-		final int height = (int) (factor * bounds.getHeight() + 0.5);
+		final int width = (int) (factor * (2 * MARGIN + bounds.getWidth()) + 0.5);
+		final int height = (int) (factor * (2 * MARGIN + bounds.getHeight()) + 0.5);
 		final String ext = args.getFormat();
 		if (TRANSPARENT_FORMATS.contains(ext))
 			return new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);

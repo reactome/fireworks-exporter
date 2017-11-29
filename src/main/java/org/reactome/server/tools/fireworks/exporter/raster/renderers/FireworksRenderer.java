@@ -2,6 +2,7 @@ package org.reactome.server.tools.fireworks.exporter.raster.renderers;
 
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksNode;
+import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisType;
 import org.reactome.server.tools.fireworks.exporter.profiles.FireworksColorProfile;
 import org.reactome.server.tools.fireworks.exporter.raster.index.FireworksIndex;
 import org.reactome.server.tools.fireworks.exporter.raster.layers.FireworksCanvas;
@@ -26,6 +27,15 @@ public class FireworksRenderer {
 	public void layout() {
 		index.getNodes().forEach(node -> node.render(canvas, profile, index));
 		index.getEdges().forEach(edge -> edge.render(canvas, profile, index));
+		if (index.getAnalysis().getResult() != null) {
+			if (index.getAnalysis().getType() == AnalysisType.EXPRESSION)
+				index.getAnalysis().addLegend(canvas, profile);
+		}
+		index.getAnalysis().addLogo(canvas);
+	}
+
+	public void setCol(int col) {
+		index.getAnalysis().setCol(canvas, profile, col);
 	}
 
 }

@@ -99,8 +99,9 @@ public class FireworksExporterTest
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
 		args.setFactor(7.);
 		args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
-		args.setFlags(Arrays.asList("CTP"));
-		args.setProfile("Copper plus");
+//		args.setFlags(Arrays.asList("CTP"));
+		args.setProfile("Calcium Salts");
+		args.setColumn(1);
 		try {
 			args.setToken(createExpressionToken());
 			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);

@@ -14,6 +14,13 @@ public class FireworksCanvas {
 	private TextLayer text = new TextLayer();
 	private DrawLayer edgeFlags = new DrawLayer();
 	private DrawLayer nodeFlags = new DrawLayer();
+	private FillDrawLayer legendBackground = new FillDrawLayer();
+	private FillLayer legendBar = new FillLayer();
+	private ImageLayer logoLayer = new ImageLayer();
+	private BoundTextLayer infoText = new BoundTextLayer();
+	private BoundTextLayer legendLabels = new BoundTextLayer();
+	private FillLayer tickArrows = new FillLayer();
+	private DrawLayer ticks = new DrawLayer();
 
 	private final List<Layer> layers = Arrays.asList(
 			edgeFlags,
@@ -22,7 +29,16 @@ public class FireworksCanvas {
 			nodeFlags,
 			nodeSelection,
 			nodes,
-			text
+			text,
+
+			legendBackground,
+			legendBar,
+			legendLabels,
+			ticks,
+			tickArrows,
+
+			logoLayer,
+			infoText
 	);
 
 	public void render(Graphics2D graphics) {
@@ -68,10 +84,6 @@ public class FireworksCanvas {
 		return edgeSelection;
 	}
 
-	public DrawLayer getFlags() {
-		return flags;
-	}
-
 	public TextLayer getText() {
 		return text;
 	}
@@ -82,5 +94,33 @@ public class FireworksCanvas {
 
 	public DrawLayer getNodeFlags() {
 		return nodeFlags;
+	}
+
+	public FillDrawLayer getLegendBackground() {
+		return legendBackground;
+	}
+
+	public FillLayer getLegendBar() {
+		return legendBar;
+	}
+
+	public ImageLayer getLogoLayer() {
+		return logoLayer;
+	}
+
+	public BoundTextLayer getInfoText() {
+		return infoText;
+	}
+
+	public BoundTextLayer getLegendLabels() {
+		return legendLabels;
+	}
+
+	public FillLayer getTickArrows() {
+		return tickArrows;
+	}
+
+	public DrawLayer getTicks() {
+		return ticks;
 	}
 }
