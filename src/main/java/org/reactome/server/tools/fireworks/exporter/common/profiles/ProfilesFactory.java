@@ -1,9 +1,7 @@
-package org.reactome.server.tools.fireworks.exporter.profiles;
+package org.reactome.server.tools.fireworks.exporter.common.profiles;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
-import org.reactome.server.tools.diagram.data.FireworksFactory;
-import org.reactome.server.tools.diagram.data.exception.DeserializationException;
 import org.reactome.server.tools.diagram.data.fireworks.profile.FireworksProfile;
 
 import java.io.IOException;

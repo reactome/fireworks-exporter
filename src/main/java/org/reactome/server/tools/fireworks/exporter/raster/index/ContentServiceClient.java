@@ -1,17 +1,14 @@
 package org.reactome.server.tools.fireworks.exporter.raster.index;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.io.IOUtils;
-import org.reactome.server.tools.diagram.data.exception.DeserializationException;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class ContentServiceClient {
@@ -25,11 +22,18 @@ public class ContentServiceClient {
 		ContentServiceClient.HOST = host;
 	}
 
+	@SuppressWarnings("unused")
 	public static void setService(String service) {
 		ContentServiceClient.SERVICE = service;
 	}
 
-	public static Set<Long> getFlagged(String term, Long speciesId) {
+	/**
+	 * Get a list of dbIds of pathways that should be flagged. This method calss
+	 * @param term
+	 * @param speciesId
+	 * @return
+	 */
+	static Set<Long> getFlagged(String term, Long speciesId) {
 		try {
 			final URL url = new URL(HOST + SERVICE + String.format(QUERY, term, speciesId));
 

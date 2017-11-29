@@ -1,7 +1,7 @@
 package org.reactome.server.tools.fireworks.exporter.raster.index;
 
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
-import org.reactome.server.tools.fireworks.exporter.api.FireworkArgs;
+import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
 
 import java.util.*;
 

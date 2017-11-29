@@ -1,13 +1,12 @@
 package org.reactome.server.tools.fireworks.exporter.raster.index;
 
 import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisType;
-import org.reactome.server.tools.fireworks.exporter.profiles.ColorFactory;
-import org.reactome.server.tools.fireworks.exporter.profiles.FireworksColorProfile;
+import org.reactome.server.tools.fireworks.exporter.common.profiles.ColorFactory;
+import org.reactome.server.tools.fireworks.exporter.common.profiles.FireworksColorProfile;
 import org.reactome.server.tools.fireworks.exporter.raster.layers.FireworksCanvas;
 
 import java.awt.*;
 import java.awt.geom.Path2D;
-import java.util.List;
 
 import static org.reactome.server.tools.fireworks.exporter.raster.index.Node.P_VALUE_THRESHOLD;
 
@@ -19,7 +18,6 @@ public class Edge extends FireworksElement {
 
 	private final Node from;
 	private final Node to;
-	private List<Double> exp;
 
 	Edge(Node from, Node to) {
 		this.from = from;
@@ -36,10 +34,6 @@ public class Edge extends FireworksElement {
 	public void setFlag(boolean flag) {
 		super.setFlag(flag);
 		from.setFlag(true);
-	}
-
-	public Node getFrom() {
-		return from;
 	}
 
 	public Node getTo() {
@@ -74,11 +68,11 @@ public class Edge extends FireworksElement {
 		if (index.getAnalysis().getResult() == null)
 			return profile.getEdge().getInitial();
 		if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
-			if (exp != null) {
+			if (to.getExp() != null) {
 				if (getpValue() <= P_VALUE_THRESHOLD) {
 					final double min = index.getAnalysis().getResult().getExpression().getMin();
 					final double max = index.getAnalysis().getResult().getExpression().getMax();
-					final double val = 1 - (exp.get(0) - min) / (max - min);
+					final double val = 1 - (to.getExp().get(0) - min) / (max - min);
 					return ColorFactory.interpolate(profile.getEdge().getExpression(), val);
 				} else return profile.getEdge().getHit();
 			}
@@ -102,7 +96,4 @@ public class Edge extends FireworksElement {
 			canvas.getEdgeFlags().add(path, profile.getEdge().getFlag(), FLAG_STROKE);
 	}
 
-	public void setExp(List<Double> exp) {
-		this.exp = exp;
-	}
 }

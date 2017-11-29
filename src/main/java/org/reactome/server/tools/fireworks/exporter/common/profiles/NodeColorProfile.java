@@ -1,4 +1,4 @@
-package org.reactome.server.tools.fireworks.exporter.profiles;
+package org.reactome.server.tools.fireworks.exporter.common.profiles;
 
 import java.awt.*;
 

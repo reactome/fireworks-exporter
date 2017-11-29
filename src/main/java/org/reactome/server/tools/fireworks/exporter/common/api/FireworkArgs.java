@@ -1,4 +1,4 @@
-package org.reactome.server.tools.fireworks.exporter.api;
+package org.reactome.server.tools.fireworks.exporter.common.api;
 
 import java.awt.*;
 import java.util.Collection;

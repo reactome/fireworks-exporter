@@ -3,7 +3,7 @@ package org.reactome.server.tools.fireworks.exporter.raster.renderers;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksNode;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisType;
-import org.reactome.server.tools.fireworks.exporter.profiles.FireworksColorProfile;
+import org.reactome.server.tools.fireworks.exporter.common.profiles.FireworksColorProfile;
 import org.reactome.server.tools.fireworks.exporter.raster.index.FireworksIndex;
 import org.reactome.server.tools.fireworks.exporter.raster.layers.FireworksCanvas;
 

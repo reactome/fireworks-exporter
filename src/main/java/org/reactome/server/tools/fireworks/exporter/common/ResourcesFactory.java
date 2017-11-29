@@ -1,12 +1,15 @@
-package org.reactome.server.tools.fireworks.exporter.factory;
+package org.reactome.server.tools.fireworks.exporter.common;
 
 import org.apache.commons.io.IOUtils;
 import org.reactome.server.tools.diagram.data.FireworksFactory;
 import org.reactome.server.tools.diagram.data.exception.DeserializationException;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 
 public class ResourcesFactory {
@@ -39,4 +42,9 @@ public class ResourcesFactory {
 	}
 
 
+	public static BufferedImage getLogo() throws IOException {
+		final String filename = "reactome-logo-100.png";
+		final InputStream resource = ResourcesFactory.class.getResourceAsStream(filename);
+		return ImageIO.read(resource);
+	}
 }

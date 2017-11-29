@@ -1,10 +1,10 @@
 package org.reactome.server.tools.fireworks.exporter.raster.index;
 
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
-import org.reactome.server.tools.fireworks.exporter.api.FireworkArgs;
+import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisException;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisServerError;
-import org.reactome.server.tools.fireworks.exporter.profiles.FireworksColorProfile;
+import org.reactome.server.tools.fireworks.exporter.common.profiles.FireworksColorProfile;
 
 import java.util.*;
 

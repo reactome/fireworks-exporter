@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.apache.commons.io.IOUtils;
 import org.reactome.server.tools.diagram.data.exception.DeserializationException;
-import org.reactome.server.tools.fireworks.exporter.api.FireworkArgs;
+import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.AnalysisClient;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisException;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisServerError;
@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Unit test for simple FireworksExporter.
@@ -65,7 +66,7 @@ public class FireworksExporterTest
 	public void testFlags() {
 		ContentServiceClient.setHost("https://reactomedev.oicr.on.ca/");
 		final FireworkArgs args = new FireworkArgs("Canis_familiaris", "png");
-		args.setFlags(Arrays.asList("CTP"));
+		args.setFlags(Collections.singletonList("CTP"));
 		args.setFactor(7.);
 		try {
 			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
@@ -122,7 +123,7 @@ public class FireworksExporterTest
 		args.setFactor(7.);
 		args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
 //		args.setFlags(Arrays.asList("CTP"));
-		args.setProfile("Calcium Salts");
+		args.setProfile("Copper plus");
 //		args.setColumn(1);
 		try {
 			args.setToken(createExpressionToken());

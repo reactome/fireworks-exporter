@@ -2,8 +2,8 @@ package org.reactome.server.tools.fireworks.exporter.raster.index;
 
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksNode;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisType;
-import org.reactome.server.tools.fireworks.exporter.profiles.ColorFactory;
-import org.reactome.server.tools.fireworks.exporter.profiles.FireworksColorProfile;
+import org.reactome.server.tools.fireworks.exporter.common.profiles.ColorFactory;
+import org.reactome.server.tools.fireworks.exporter.common.profiles.FireworksColorProfile;
 import org.reactome.server.tools.fireworks.exporter.raster.layers.FireworksCanvas;
 
 import java.awt.*;
@@ -22,8 +22,7 @@ public class Node extends FireworksElement {
 	private static final Stroke FLAG_STROKE = new BasicStroke(0.7f);
 	private FireworksNode node;
 
-	private Set<Edge> from;
-	private Set<Edge> to;
+	private Set<Edge> parents;
 	private List<Double> exp;
 
 	Node(FireworksNode node) {
@@ -33,11 +32,11 @@ public class Node extends FireworksElement {
 	Edge addChild(Node child) {
 		if (this == child) return null;
 		final Edge edge = new Edge(this, child);
-		if (to == null) to = new HashSet<>();
-		to.add(edge);
-		if (child.from == null)
-			child.from = new HashSet<>();
-		child.from.add(edge);
+//		if (to == null) to = new HashSet<>();
+//		to.add(edge);
+		if (child.parents == null)
+			child.parents = new HashSet<>();
+		child.parents.add(edge);
 		return edge;
 	}
 
@@ -45,15 +44,15 @@ public class Node extends FireworksElement {
 	public void setSelected(boolean selected) {
 		super.setSelected(selected);
 		// Fire parents selection
-		if (from != null)
-			from.forEach(edge -> edge.setSelected(selected));
+		if (parents != null)
+			parents.forEach(edge -> edge.setSelected(selected));
 	}
 
 	@Override
 	public void setFlag(boolean flag) {
 		super.setFlag(flag);
-		if (from != null)
-			from.forEach(edge -> edge.setFlag(flag));
+		if (parents != null)
+			parents.forEach(edge -> edge.setFlag(flag));
 	}
 
 	public FireworksNode getNode() {
@@ -111,7 +110,7 @@ public class Node extends FireworksElement {
 	}
 
 	private void text(FireworksCanvas canvas) {
-		if (from == null) {
+		if (parents == null) {
 			final Color color = isSelected()
 					? Color.BLUE
 					: Color.BLACK;
@@ -121,17 +120,15 @@ public class Node extends FireworksElement {
 
 	public void setpValue(Double pValue) {
 		super.setpValue(pValue);
-		if (from != null)
-			this.from.forEach(edge -> edge.setpValue(pValue));
+		if (parents != null)
+			this.parents.forEach(edge -> edge.setpValue(pValue));
 	}
 
-	public void setExp(List<Double> exp) {
+	void setExp(List<Double> exp) {
 		this.exp = exp;
-		if (from != null)
-			from.forEach(edge -> edge.setExp(exp));
 	}
 
-	public List<Double> getExp() {
+	List<Double> getExp() {
 		return exp;
 	}
 }

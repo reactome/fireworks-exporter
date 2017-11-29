@@ -4,19 +4,19 @@ import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksNode;
 import org.reactome.server.tools.diagram.data.layout.NodeProperties;
 import org.reactome.server.tools.diagram.data.layout.impl.NodePropertiesFactory;
-import org.reactome.server.tools.fireworks.exporter.api.FireworkArgs;
+import org.reactome.server.tools.fireworks.exporter.common.ResourcesFactory;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.AnalysisClient;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisException;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisServerError;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisResult;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisType;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.model.PathwaySummary;
-import org.reactome.server.tools.fireworks.exporter.profiles.FireworksColorProfile;
-import org.reactome.server.tools.fireworks.exporter.profiles.GradientColorProfile;
+import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
+import org.reactome.server.tools.fireworks.exporter.common.profiles.FireworksColorProfile;
+import org.reactome.server.tools.fireworks.exporter.common.profiles.GradientColorProfile;
 import org.reactome.server.tools.fireworks.exporter.raster.layers.FireworksCanvas;
 import org.reactome.server.tools.fireworks.exporter.raster.properties.FontProperties;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -24,7 +24,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Collection;
@@ -175,7 +174,7 @@ public class FireworksAnalysis {
 	public void addLogo(FireworksCanvas canvas) {
 		try {
 			final Rectangle2D bounds = canvas.getBounds();
-			final BufferedImage logo = getLogo();
+			final BufferedImage logo = ResourcesFactory.getLogo();
 			logo_width = bounds.getWidth() * RELATIVE_LOGO_WIDTH;
 			if (logo_width > logo.getWidth()) logo_width = logo.getWidth();
 			if (logo_width < MIN_LOGO_WIDTH) logo_width = MIN_LOGO_WIDTH;
@@ -190,13 +189,6 @@ public class FireworksAnalysis {
 			e.printStackTrace();
 		}
 
-	}
-
-	/** Returns the first logo that has a width greater than logo_width */
-	private BufferedImage getLogo() throws IOException {
-		final String filename = "reactome_logo_100pxW_50T.png";
-		final InputStream resource = getClass().getResourceAsStream(filename);
-		return ImageIO.read(resource);
 	}
 
 	public AnalysisResult getResult() {
