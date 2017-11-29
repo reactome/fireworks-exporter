@@ -1,10 +1,15 @@
 package org.reactome.server.tools.fireworks.exporter.raster.index;
 
+import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisType;
+import org.reactome.server.tools.fireworks.exporter.profiles.ColorFactory;
 import org.reactome.server.tools.fireworks.exporter.profiles.FireworksColorProfile;
 import org.reactome.server.tools.fireworks.exporter.raster.layers.FireworksCanvas;
 
 import java.awt.*;
 import java.awt.geom.Path2D;
+import java.util.List;
+
+import static org.reactome.server.tools.fireworks.exporter.raster.index.Node.P_PVALUE_THRESHOLD;
 
 public class Edge extends FireworksElement {
 
@@ -14,6 +19,8 @@ public class Edge extends FireworksElement {
 
 	private final Node from;
 	private final Node to;
+	private Double pValue;
+	private List<Double> exp;
 
 	public Edge(Node from, Node to) {
 		this.from = from;
@@ -40,7 +47,7 @@ public class Edge extends FireworksElement {
 		return to;
 	}
 
-	public void render(FireworksCanvas canvas, FireworksColorProfile profile) {
+	public void render(FireworksCanvas canvas, FireworksColorProfile profile, FireworksIndex index) {
 		final Path2D path = new Path2D.Double();
 		path.moveTo(from.getNode().getX(), from.getNode().getY());
 
@@ -53,15 +60,37 @@ public class Edge extends FireworksElement {
 
 		path.quadTo(x, y, to.getNode().getX(), to.getNode().getY());
 
-		draw(canvas, profile, path);
+		draw(canvas, profile, path, index);
 		selection(canvas, profile, path);
 		flag(canvas, profile, path);
 
 	}
 
-	private void draw(FireworksCanvas canvas, FireworksColorProfile profile, Path2D path) {
-		final Color initial = profile.getEdge().getInitial();
-		canvas.getEdges().add(path, initial, DEFAULT_STROKE);
+	private void draw(FireworksCanvas canvas, FireworksColorProfile profile, Path2D path, FireworksIndex index) {
+		final Color color = getEdgeColor(profile, index);
+		canvas.getEdges().add(path, color, DEFAULT_STROKE);
+	}
+
+	private Color getEdgeColor(FireworksColorProfile profile, FireworksIndex index) {
+		if (index.getAnalysis().getResult() == null)
+			return profile.getEdge().getInitial();
+		if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
+			if (exp != null) {
+				if (pValue <= P_PVALUE_THRESHOLD) {
+					final double min = index.getAnalysis().getResult().getExpression().getMin();
+					final double max = index.getAnalysis().getResult().getExpression().getMax();
+					final double val = 1 - (exp.get(0) - min) / (max - min);
+					return ColorFactory.interpolate(profile.getEdge().getExpression(), val);
+				} else return profile.getEdge().getHit();
+			}
+		} else if (index.getAnalysis().getType() == AnalysisType.OVERREPRESENTATION
+				|| index.getAnalysis().getType() == AnalysisType.SPECIES_COMPARISON) {
+			if (pValue != null && pValue <= P_PVALUE_THRESHOLD) {
+				final double val = pValue / P_PVALUE_THRESHOLD;
+				return ColorFactory.interpolate(profile.getEdge().getEnrichment(), val);
+			}
+		}
+		return profile.getEdge().getFadeout();
 	}
 
 	private void selection(FireworksCanvas canvas, FireworksColorProfile profile, Path2D path) {
@@ -72,5 +101,13 @@ public class Edge extends FireworksElement {
 	private void flag(FireworksCanvas canvas, FireworksColorProfile profile, Path2D path) {
 		if (isFlag())
 			canvas.getEdgeFlags().add(path, profile.getEdge().getFlag(), FLAG_STROKE);
+	}
+
+	public void setpValue(Double pValue) {
+		this.pValue = pValue;
+	}
+
+	public void setExp(List<Double> exp) {
+		this.exp = exp;
 	}
 }

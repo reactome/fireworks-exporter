@@ -2,28 +2,30 @@ package org.reactome.server.tools.fireworks.exporter.raster;
 
 import org.reactome.server.tools.diagram.data.exception.DeserializationException;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
-import org.reactome.server.tools.diagram.data.fireworks.profile.FireworksProfile;
 import org.reactome.server.tools.fireworks.exporter.api.FireworkArgs;
+import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisException;
+import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisServerError;
 import org.reactome.server.tools.fireworks.exporter.factory.ResourcesFactory;
 import org.reactome.server.tools.fireworks.exporter.profiles.FireworksColorProfile;
+import org.reactome.server.tools.fireworks.exporter.profiles.ProfilesFactory;
 import org.reactome.server.tools.fireworks.exporter.raster.index.FireworksIndex;
 import org.reactome.server.tools.fireworks.exporter.raster.layers.FireworksCanvas;
-import org.reactome.server.tools.fireworks.exporter.raster.renderers.FireworksRenderer;
 import org.reactome.server.tools.fireworks.exporter.raster.properties.FontProperties;
-import org.reactome.server.tools.fireworks.exporter.profiles.ProfilesFactory;
+import org.reactome.server.tools.fireworks.exporter.raster.renderers.FireworksRenderer;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class FireworksExporter {
 	private static final int MARGIN = 15;
 	private static final Set<String> TRANSPARENT_FORMATS = new HashSet<>(Collections.singletonList("png"));
 	private static final Set<String> NO_TRANSPARENT_FORMATS = new HashSet<>(Arrays.asList("jpg", "jpeg", "gif"));
 	private final FireworkArgs args;
-	private final FireworksGraph layout;
-	private final FireworksColorProfile profile;
 	private final FireworksCanvas canvas = new FireworksCanvas();
 
 	/**
@@ -32,10 +34,13 @@ public class FireworksExporter {
 	 * @param args       specs of the resulting diagram.
 	 * @param layoutPath where to find the species layout.
 	 */
-	public FireworksExporter(FireworkArgs args, String layoutPath) throws DeserializationException {
+	public FireworksExporter(FireworkArgs args, String layoutPath) throws DeserializationException, AnalysisServerError, AnalysisException {
 		this.args = args;
-		layout = ResourcesFactory.getGraph(layoutPath, args.getSpeciesName());
-		profile = ProfilesFactory.getProfile(args.getProfile());
+		final FireworksGraph layout = ResourcesFactory.getGraph(layoutPath, args.getSpeciesName());
+		final FireworksColorProfile profile = ProfilesFactory.getProfile(args.getProfile());
+		final FireworksIndex index = new FireworksIndex(layout, profile, args);
+		final FireworksRenderer renderer = new FireworksRenderer(layout, canvas, profile, index);
+		renderer.layout();
 	}
 
 	/**
@@ -43,9 +48,6 @@ public class FireworksExporter {
 	 */
 
 	public BufferedImage render() {
-		final FireworksIndex index = new FireworksIndex(layout, profile, args);
-		final FireworksRenderer renderer = new FireworksRenderer(layout, canvas, profile, args, index);
-		renderer.layout();
 		final BufferedImage image = createImage();
 		final Graphics2D graphics = createGraphics(image);
 		canvas.render(graphics);

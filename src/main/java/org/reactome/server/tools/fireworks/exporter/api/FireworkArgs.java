@@ -12,6 +12,8 @@ public class FireworkArgs {
 	private Color background;
 	private Collection<String> selected;
 	private Collection<String> flags;
+	private String token;
+	private String resource;
 
 	public FireworkArgs(String speciesName, String format) {
 		this.speciesName = speciesName;
@@ -30,16 +32,24 @@ public class FireworkArgs {
 		return profile;
 	}
 
+	public void setProfile(String profile) {
+		this.profile = profile;
+	}
+
 	public Double getFactor() {
 		return factor;
 	}
 
-	public void setFactor(double factor) {
+	public void setFactor(Double factor) {
 		this.factor = factor;
 	}
 
 	public Color getBackground() {
 		return background;
+	}
+
+	public void setBackground(Color background) {
+		this.background = background;
 	}
 
 	public Collection<String> getSelected() {
@@ -58,5 +68,21 @@ public class FireworkArgs {
 	public void setFlags(Collection<String> flags) {
 		if (flags != null)
 			this.flags = new HashSet<>(flags);
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getResource() {
+		return resource;
+	}
+
+	public void setResource(String resource) {
+		this.resource = resource;
 	}
 }

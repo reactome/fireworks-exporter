@@ -15,17 +15,16 @@ import java.util.List;
 public class TextLayer extends CommonLayer {
 
 	private static final double TEXT_DISTANCE = 15;
-	private static final Color TEXT_COLOR = Color.BLACK;
 
 	private List<RenderableText> objects = new LinkedList<>();
 
 	@Override
 	public void render(Graphics2D graphics) {
-		graphics.setPaint(TEXT_COLOR);
 		objects.forEach(text -> renderText(graphics, text));
 	}
 
 	private void renderText(Graphics2D graphics, RenderableText text) {
+		graphics.setPaint(text.color);
 		final List<String> lines = getLines(text.text);
 		// baseline of first line
 		final int baseline = FontProperties.DEFAULT_FONT.getSize() * (lines.size() - 1);
@@ -56,18 +55,20 @@ public class TextLayer extends CommonLayer {
 		objects.clear();
 	}
 
-	public void add(String text, Point2D.Double center) {
-		objects.add(new RenderableText(text, center));
+	public void add(String text, Point2D.Double center, Color color) {
+		objects.add(new RenderableText(text, center, color));
 	}
 
 	private class RenderableText {
 
 		private final String text;
 		private final Point2D.Double nodePosition;
+		private Color color;
 
-		RenderableText(String text, Point2D.Double nodePosition) {
+		RenderableText(String text, Point2D.Double nodePosition, Color color) {
 			this.text = text;
 			this.nodePosition = nodePosition;
+			this.color = color;
 		}
 	}
 
