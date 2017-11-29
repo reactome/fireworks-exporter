@@ -25,8 +25,10 @@ public class FireworksRenderer {
 	}
 
 	public void layout() {
-		index.getNodes().forEach(node -> node.render(canvas, profile, index));
-		index.getEdges().forEach(edge -> edge.render(canvas, profile, index));
+		final NodeRenderer nodeRenderer = new NodeRenderer(profile, index, canvas);
+		index.getNodes().forEach(nodeRenderer::render);
+		final EdgeRenderer edgeRenderer = new EdgeRenderer(profile, index, canvas);
+		index.getEdges().forEach(edgeRenderer::render);
 		if (index.getAnalysis().getResult() != null) {
 			if (index.getAnalysis().getType() == AnalysisType.EXPRESSION)
 				index.getAnalysis().addLegend(canvas, profile);

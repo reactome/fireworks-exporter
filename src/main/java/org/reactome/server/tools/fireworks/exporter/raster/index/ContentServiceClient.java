@@ -18,6 +18,7 @@ public class ContentServiceClient {
 	private static String SERVICE = "/ContentService/";
 	private static ObjectMapper mapper = new ObjectMapper();
 
+	@SuppressWarnings("unused")
 	public static void setHost(String host) {
 		ContentServiceClient.HOST = host;
 	}
@@ -28,10 +29,20 @@ public class ContentServiceClient {
 	}
 
 	/**
-	 * Get a list of dbIds of pathways that should be flagged. This method calss
-	 * @param term
-	 * @param speciesId
-	 * @return
+	 * Get a list of dbIds of pathways that should be flagged. This method calls
+	 * ContentService from reactome:
+	 * <p>
+	 * <pre>
+	 * {host}{service}data/pathways/low/diagram/identifier/{term}/allForms?speciesId={speciesId}
+	 * </pre>
+	 * where <em>host</em> is <strong>http://localhost</strong> and
+	 * <em>service</em>, <strong>/ContentService/</strong> by default.
+	 *
+	 * @param term      term to look for
+	 * @param speciesId species where to look for
+	 *
+	 * @return a list of dbIds that should be flagged, null if service is
+	 * unavailable
 	 */
 	static Set<Long> getFlagged(String term, Long speciesId) {
 		try {
@@ -42,13 +53,13 @@ public class ContentServiceClient {
 			connection.setRequestProperty("Response-Type", "application/json");
 			switch (connection.getResponseCode()) {
 				case 200:
-					String json = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+					final String json = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
 					final ArrayNode nodes = mapper.readValue(json, ArrayNode.class);
 					final Set<Long> ids = new HashSet<>();
 					nodes.forEach(jsonNode -> ids.add(jsonNode.get("dbId").longValue()));
 					return ids;
 				default:
-					String error = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+					final String error = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
 					// TODO: throw proper error
 					// This is throwing a DeseralizationException
 //					throw new AnalysisException(getObject(AnalysisError.class, error));

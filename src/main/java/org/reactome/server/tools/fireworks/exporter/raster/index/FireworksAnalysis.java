@@ -31,6 +31,8 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class FireworksAnalysis {
+
+	public static final double P_VALUE_THRESHOLD = 0.05;
 	private static final Color BACKGROUND_BORDER = new Color(175, 175, 175);
 	private static final Color BACKGROUND_FILL = new Color(220, 220, 220);
 	private static final Stroke BACKGROUND_STROKE = new BasicStroke(0.5f);
@@ -165,7 +167,7 @@ public class FireworksAnalysis {
 			bottomText = EXPRESSION_FORMAT.format(index.getAnalysis().getResult().getExpression().getMin());
 		} else {
 			topText = ENRICHMENT_FORMAT.format(0);
-			bottomText = ENRICHMENT_FORMAT.format(Node.P_VALUE_THRESHOLD);
+			bottomText = ENRICHMENT_FORMAT.format(P_VALUE_THRESHOLD);
 		}
 		canvas.getLegendLabels().add(topText, Color.BLACK, top, FontProperties.DEFAULT_FONT);
 		canvas.getLegendLabels().add(bottomText, Color.BLACK, bottom, FontProperties.DEFAULT_FONT);
@@ -222,7 +224,7 @@ public class FireworksAnalysis {
 				if (node.getpValue() == null)
 					continue;
 				double value = node.getpValue();
-				val = value / Node.P_VALUE_THRESHOLD;
+				val = value / P_VALUE_THRESHOLD;
 			}
 			final double y = colorBar.getY() + val * colorBar.getHeight();
 			final Shape line = new Line2D.Double(colorBar.getX(), y, colorBar.getMaxX(), y);
