@@ -65,6 +65,6 @@ public class Node extends FireworksElement {
 	}
 
 	public boolean isTopLevel() {
-		return parents != null;
+		return parents == null;
 	}
 }
