@@ -9,8 +9,29 @@ The [fireworks](https://github.com/reactome-pwp/fireworks) project aims to provi
 The fireworks exporter allows to generate these views in png, jpg or gif and download them into your computer.
 
 ### Install
-Fireworks exporter is a java library. It will be soon available in our maven repository. Until then, you need to download and package the code.
+Fireworks exporter can be included into your project using maven. 
+Add the dependency:
+```xml
+ <dependencies>
+    <dependency>
+        <groupId>org.reactome.server.tools</groupId>
+        <artifactId>fireworks-exporter</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+</dependencies>
+```
+and the EBI repository:
+```xml
+<repositories>
+    <repository>
+        <id>nexus-ebi-repo-release</id>
+        <name>The EBI internal repository</name>
+        <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
+    </repository>
 
+</repositories>
+
+```
 ### Usage
 #### Resources
 fireworks exporter needs access to the json files describing the layout of each species. This files can be found at https://reactome.org/download/current/fireworks/.
