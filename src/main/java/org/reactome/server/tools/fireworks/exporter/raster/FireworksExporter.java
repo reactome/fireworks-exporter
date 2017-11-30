@@ -51,8 +51,10 @@ public class FireworksExporter {
 	 */
 
 	public BufferedImage render() {
-		if (args.getColumn() != null) renderer.setCol(args.getColumn());
-		else renderer.setCol(0);
+		if (index.getAnalysis().getResult() != null) {
+			if (args.getColumn() != null) renderer.setCol(args.getColumn());
+			else renderer.setCol(0);
+		}
 		final BufferedImage image = createImage();
 		final Graphics2D graphics = createGraphics(image);
 		canvas.render(graphics);
