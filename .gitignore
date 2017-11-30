@@ -1,13 +1,10 @@
 # intelliJ idea git ignore
-*.iml
 .idea
 
 *target*
 *.jar
 *.war
 *.ear
-*.class
-
 # eclipse specific git ignore
 *.pydevproject
 .project
@@ -34,3 +31,5 @@ local.properties
 
 *.lic
 *.lic.xml
+
+test-image
