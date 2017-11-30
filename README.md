@@ -9,7 +9,8 @@ The [fireworks](https://github.com/reactome-pwp/fireworks) project aims to provi
 The fireworks exporter allows to generate these views in png, jpg or gif and download them into your computer.
 
 ### Install
-Fireworks exporter can be included into your project using maven. Add the dependency to your project.
+Fireworks exporter can be included into your project using maven. 
+Add the dependency:
 ```xml
  <dependencies>
     <dependency>
@@ -19,7 +20,7 @@ Fireworks exporter can be included into your project using maven. Add the depend
     </dependency>
 </dependencies>
 ```
-and the EBI repository
+and the EBI repository:
 ```xml
 <repositories>
     <repository>
