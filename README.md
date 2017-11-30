@@ -6,8 +6,7 @@ Service to generate images of top level pathway view (the fireworks).
 
 ### Introduction
 The [fireworks](https://github.com/reactome-pwp/fireworks) project aims to provide 'a genome-wide, hierarchical visualisation of Reactome pathways in a space-filling graph'.
-
-The fireworks exporter allows to generate this views in png, jpg or gif and download them into your computer.
+The fireworks exporter allows to generate these views in png, jpg or gif and download them into your computer.
 
 ### Install
 Fireworks exporter is a java library. It will be soon available in our maven repository. Until then, you need to download and package the code.
@@ -58,7 +57,7 @@ String fireworks_path = "path/to/fireworks";
 FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
 args.setFactor(5.0);
 
-// We need a link to the reactome home page to retrieve the pathways.
+// Flagging is a reactome service.
 ContentServiceClient.setHost("https://reactome.org/");
 args.setFlags(Arrays.asList("CTP");
 
@@ -68,12 +67,11 @@ BufferedImage image = exporter.render();
 
 ![Homo sapiens flag](doc/Homo_sapiens_flags.png)
 
-What if I want a more complex analysis of data? Reactome provides an analysis service that allows to send your data and visualize it on top of the diagram. To see more about how to perform an analysis go to https://reactomerelease.oicr.on.ca/dev/analysis.
+What if I want a more complex analysis of data? Reactome provides an analysis service that allows to send your data and visualize it on top of the diagram. To see more about how to perform an analysis go to https://reactome.org/dev/analysis.
 
 Once you have performed the analysis, you only need to specify the token and the reactome server.
 
 ```java
-// We need a link to the reactome home page to retrieve the pathways.
 String fireworks_path = "path/to/fireworks";
 FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
 args.setFactor(5.0);
