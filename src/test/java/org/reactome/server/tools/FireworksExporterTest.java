@@ -67,6 +67,7 @@ public class FireworksExporterTest {
 		final FireworkArgs args = new FireworkArgs("Canis_familiaris", "png");
 		args.setFlags(Collections.singletonList("CTP"));
 		args.setFactor(2.);
+		args.setWriteTitle(true);
 		try {
 			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
 			final BufferedImage image = exporter.render();
@@ -117,6 +118,7 @@ public class FireworksExporterTest {
 		args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
 //		args.setFlags(Arrays.asList("CTP"));
 		args.setProfile("Copper plus");
+		args.setWriteTitle(true);
 //		args.setColumn(1);
 		try {
 			args.setToken(createExpressionToken());
@@ -127,6 +129,20 @@ public class FireworksExporterTest {
 		} catch ( IOException | AnalysisServerError | AnalysisException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testTitle() {
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "gif");
+		args.setFactor(2.);
+		args.setWriteTitle(true);
+		try {
+			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
+			final BufferedImage image = exporter.render();
+			saveToDisk(args, image);
+		} catch (AnalysisServerError | AnalysisException | IOException analysisServerError) {
+			analysisServerError.printStackTrace();
 		}
 	}
 

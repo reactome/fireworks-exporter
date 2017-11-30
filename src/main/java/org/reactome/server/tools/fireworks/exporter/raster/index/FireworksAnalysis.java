@@ -2,9 +2,6 @@ package org.reactome.server.tools.fireworks.exporter.raster.index;
 
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksNode;
-import org.reactome.server.tools.diagram.data.layout.NodeProperties;
-import org.reactome.server.tools.diagram.data.layout.impl.NodePropertiesFactory;
-import org.reactome.server.tools.fireworks.exporter.common.ResourcesFactory;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.AnalysisClient;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisException;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisServerError;
@@ -22,8 +19,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Collection;
@@ -42,8 +37,6 @@ public class FireworksAnalysis {
 	private static final double LEGEND_TO_DIAGRAM_SPACE = 15;
 	private static final double TEXT_PADDING = 2;
 	private static final double BG_PADDING = 5;
-	private static final double RELATIVE_LOGO_WIDTH = 0.1;
-	private static final double MIN_LOGO_WIDTH = 50;
 	private static final int ARROW_SIZE = 5;
 
 	private static final DecimalFormat EXPRESSION_FORMAT = new DecimalFormat("#.##E0", DecimalFormatSymbols.getInstance(Locale.UK));
@@ -56,9 +49,6 @@ public class FireworksAnalysis {
 	private FireworksIndex index;
 	private FireworksGraph layout;
 	private FireworkArgs args;
-	private double logo_width;
-	private double logo_height;
-	private Rectangle2D.Double infoBox;
 	private Rectangle2D.Double colorBar;
 
 	FireworksAnalysis(FireworksIndex index, FireworksGraph layout, FireworkArgs args) throws AnalysisServerError, AnalysisException {
@@ -173,25 +163,6 @@ public class FireworksAnalysis {
 		canvas.getLegendLabels().add(bottomText, Color.BLACK, bottom, FontProperties.DEFAULT_FONT);
 	}
 
-	public void addLogo(FireworksCanvas canvas) {
-		try {
-			final Rectangle2D bounds = canvas.getBounds();
-			final BufferedImage logo = ResourcesFactory.getLogo();
-			logo_width = bounds.getWidth() * RELATIVE_LOGO_WIDTH;
-			if (logo_width > logo.getWidth()) logo_width = logo.getWidth();
-			if (logo_width < MIN_LOGO_WIDTH) logo_width = MIN_LOGO_WIDTH;
-			logo_height = logo_width / logo.getWidth() * logo.getHeight();
-
-			final NodeProperties limits = NodePropertiesFactory.get(
-					bounds.getMaxX() - logo_width,
-					bounds.getMaxY() + LEGEND_TO_DIAGRAM_SPACE,
-					logo_width, logo_height);
-			canvas.getLogoLayer().add(logo, limits);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
 
 	public AnalysisResult getResult() {
 		return result;
@@ -202,7 +173,6 @@ public class FireworksAnalysis {
 	}
 
 	public void setCol(FireworksCanvas canvas, FireworksColorProfile profile, int col) {
-		infoText(canvas, col);
 		ticks(canvas, profile, col);
 	}
 
@@ -244,23 +214,4 @@ public class FireworksAnalysis {
 		return arrow;
 	}
 
-	private void infoText(FireworksCanvas canvas, int col) {
-		if (infoBox == null) {
-			final Rectangle2D bounds = canvas.getBounds();
-			infoBox = new Rectangle2D.Double(0, bounds.getMaxY() - logo_height,
-					bounds.getWidth() - logo_width, logo_height);
-		}
-		final String text;
-		if (type == AnalysisType.EXPRESSION) {
-			text = String.format("[%s] %d/%d %s",
-					result.getSummary().getSampleName(),
-					col + 1,
-					result.getExpression().getColumnNames().size(),
-					result.getExpression().getColumnNames().get(col));
-		} else
-			text = result.getSummary().getSampleName();
-
-		canvas.getInfoText().clear();
-		canvas.getInfoText().add(text, Color.BLACK, infoBox, FontProperties.DEFAULT_FONT);
-	}
 }

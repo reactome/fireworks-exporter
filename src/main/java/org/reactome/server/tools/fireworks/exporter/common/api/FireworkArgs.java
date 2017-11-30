@@ -15,6 +15,7 @@ public class FireworkArgs {
 	private String token;
 	private String resource;
 	private Integer column;
+	private Boolean writeTitle;
 
 	public FireworkArgs(String speciesName, String format) {
 		this.speciesName = speciesName;
@@ -93,5 +94,13 @@ public class FireworkArgs {
 
 	public void setColumn(Integer column) {
 		this.column = column;
+	}
+
+	public void setWriteTitle(Boolean writeTitle) {
+		this.writeTitle = writeTitle;
+	}
+
+	public Boolean getWriteTitle() {
+		return writeTitle;
 	}
 }
