@@ -2,7 +2,7 @@
 
 Fireworks Exporter
 =====================
-Service to generate images of top level pathway view (the fireworks).
+Exports the pathways overview as raster images.
 
 ### Introduction
 The [fireworks](https://github.com/reactome-pwp/fireworks) project aims to provide 'a genome-wide, hierarchical visualisation of Reactome pathways in a space-filling graph'.
