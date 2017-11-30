@@ -1,9 +1,10 @@
 package org.reactome.server.tools;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
 import org.apache.commons.io.IOUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.AnalysisClient;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisException;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisServerError;
@@ -22,37 +23,36 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.junit.Assert.fail;
+
 /**
  * Unit test for simple FireworksExporter.
  */
-public class FireworksExporterTest
-		extends TestCase {
+public class FireworksExporterTest {
 	private static final String FIREWORK_PATH = "src/test/resources/org/reactome/server/tools/fireworks/exporter/layouts";
-	private static final String IMAGE_FOLDER = "test-image";
+	private static final File IMAGE_FOLDER = new File("test-image");
 
-	/**
-	 * Create the test case
-	 *
-	 * @param testName name of the test case
-	 */
-	public FireworksExporterTest(String testName) {
-		super(testName);
+	@BeforeClass
+	public static void beforeClass() {
+		ContentServiceClient.setHost("https://reactomedev.oicr.on.ca");
+		AnalysisClient.setServer("https://reactomedev.oicr.on.ca");
+		// When testing local
+		// AnalysisClient.setServer("http://localhost:8080");
+		// AnalysisClient.setService("");
+		IMAGE_FOLDER.mkdirs();
 	}
 
-	/**
-	 * @return the suite of tests being tested
-	 */
-	public static Test suite() {
-		return new TestSuite(FireworksExporterTest.class);
+	@AfterClass
+	public static void afterClass() {
+		for (File child : IMAGE_FOLDER.listFiles())
+			child.delete();
+		IMAGE_FOLDER.delete();
 	}
 
-	/**
-	 * Rigourous Test :-)
-	 */
-	public void testApp() {
+	@Test
+	public void testSimple() {
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
 		try {
-			args.setFactor(10.);
 			args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
 			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
 			final BufferedImage image = exporter.render();
@@ -62,11 +62,11 @@ public class FireworksExporterTest
 		}
 	}
 
+	@Test
 	public void testFlags() {
-		ContentServiceClient.setHost("https://reactomedev.oicr.on.ca/");
 		final FireworkArgs args = new FireworkArgs("Canis_familiaris", "png");
 		args.setFlags(Collections.singletonList("CTP"));
-		args.setFactor(7.);
+		args.setFactor(2.);
 		try {
 			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
 			final BufferedImage image = exporter.render();
@@ -76,12 +76,10 @@ public class FireworksExporterTest
 		}
 	}
 
+	@Test
 	public void testEnrichment() {
-//		AnalysisClient.setServer("https://reactomedev.oicr.on.ca/");
-		AnalysisClient.setServer("http://localhost:8080");
-		AnalysisClient.setService("");
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
-		args.setFactor(7.);
+		args.setFactor(2.);
 		try {
 			args.setToken(createEnrichmentToken());
 			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
@@ -93,12 +91,10 @@ public class FireworksExporterTest
 		}
 	}
 
+	@Test
 	public void testExpression() {
-		ContentServiceClient.setHost("https://reactomerelease.oicr.on.ca/");
-		AnalysisClient.setServer("http://localhost:8080");
-		AnalysisClient.setService("");
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
-		args.setFactor(7.);
+		args.setFactor(2.);
 		args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
 //		args.setFlags(Arrays.asList("CTP"));
 		args.setProfile("Calcium Salts");
@@ -114,12 +110,10 @@ public class FireworksExporterTest
 		}
 	}
 
+	@Test
 	public void testAnimatedGif() {
-		ContentServiceClient.setHost("https://reactomerelease.oicr.on.ca/");
-		AnalysisClient.setServer("http://localhost:8080");
-		AnalysisClient.setService("");
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "gif");
-		args.setFactor(7.);
+		args.setFactor(2.);
 		args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
 //		args.setFlags(Arrays.asList("CTP"));
 		args.setProfile("Copper plus");
