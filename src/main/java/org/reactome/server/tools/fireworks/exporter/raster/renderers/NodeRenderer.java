@@ -91,6 +91,12 @@ class NodeRenderer {
 					new Point2D.Double(node.getFireworksNode().getX(),
 							node.getFireworksNode().getY()), color);
 		}
+		// Draw only nodes explicitly selected
+		if (node.isSelected() && index.getDecorator().getSelected().contains(node.getFireworksNode().getDbId())) {
+			canvas.getText().add(node.getFireworksNode().getName(),
+					new Point2D.Double(node.getFireworksNode().getX(),
+							node.getFireworksNode().getY()), Color.BLUE);
+		}
 	}
 
 }

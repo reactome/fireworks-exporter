@@ -31,6 +31,7 @@ public class FireworksExporter {
 	private final FireworksCanvas canvas = new FireworksCanvas();
 	private final FireworksRenderer renderer;
 	private final FireworksIndex index;
+	private final String title;
 
 	/**
 	 * Initialize a new {@link FireworksExporter}
@@ -44,28 +45,33 @@ public class FireworksExporter {
 		final FireworksColorProfile profile = ProfilesFactory.getProfile(args.getProfile());
 		this.index = new FireworksIndex(layout, args);
 		this.renderer = new FireworksRenderer(canvas, profile, index);
+		title = args.getWriteTitle() != null && args.getWriteTitle()
+				? args.getSpeciesName() : null;
 	}
 
 	/**
 	 * Creates a {@link BufferedImage} using the specification in args.
 	 */
-
 	public BufferedImage render() {
-		if (index.getAnalysis().getResult() != null) {
-			if (args.getColumn() != null) renderer.setCol(args.getColumn());
-			else renderer.setCol(0);
-		}
+		writeInfoText();
 		final BufferedImage image = createImage();
 		final Graphics2D graphics = createGraphics(image);
 		canvas.render(graphics);
 		return image;
 	}
 
+	private void writeInfoText() {
+		if (index.getAnalysis().getResult() != null) {
+			if (args.getColumn() != null)
+				renderer.setCol(args.getColumn(), title);
+			else renderer.setCol(0, title);
+		} else renderer.writeTitle(title);
+	}
+
 	/**
 	 * Creates an animated GIF into outputStream.
 	 *
 	 * @param outputStream where to stream the GIF
-	 *
 	 */
 	public void renderToGif(OutputStream outputStream) {
 		if (index.getAnalysis().getType() != AnalysisType.EXPRESSION)
@@ -75,7 +81,7 @@ public class FireworksExporter {
 		encoder.setRepeat(0);
 		encoder.start(outputStream);
 		for (int i = 0; i < index.getAnalysis().getResult().getExpression().getColumnNames().size(); i++) {
-			renderer.setCol(i);
+			renderer.setCol(i, title);
 			final BufferedImage image = createImage();
 			final Graphics2D graphics = createGraphics(image);
 			canvas.render(graphics);
