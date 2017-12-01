@@ -32,34 +32,44 @@ public class FireworksExporterTest {
 	private static final String FIREWORK_PATH = "src/test/resources/org/reactome/server/tools/fireworks/exporter/layouts";
 	private static final File IMAGE_FOLDER = new File("test-image");
 
+	private static final boolean save = false;
+
 	@BeforeClass
 	public static void beforeClass() {
 		ContentServiceClient.setHost("https://reactomedev.oicr.on.ca");
 		AnalysisClient.setServer("https://reactomedev.oicr.on.ca");
-		// When testing local
+		// For local testing
 		// AnalysisClient.setServer("http://localhost:8080");
 		// AnalysisClient.setService("");
-		IMAGE_FOLDER.mkdirs();
+		createImageDir();
+	}
+
+	private static void createImageDir() {
+		if (!IMAGE_FOLDER.exists() && !IMAGE_FOLDER.mkdirs())
+			System.err.println("Couldn't create test dir " + IMAGE_FOLDER);
 	}
 
 	@AfterClass
 	public static void afterClass() {
-		for (File child : IMAGE_FOLDER.listFiles())
-			child.delete();
-		IMAGE_FOLDER.delete();
+		if (!save) removeDir(IMAGE_FOLDER);
+	}
+
+	private static void removeDir(File dir) {
+		if (!dir.exists()) return;
+		final File[] files = dir.listFiles();
+		if (files == null) return;
+		for (File child : files)
+			if (!child.delete())
+				System.err.println("Couldn't delete file " + child);
+		if (!dir.delete())
+			System.err.println("Couldn't delete dir " + dir);
 	}
 
 	@Test
 	public void testSimple() {
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
-		try {
-			args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
-			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
-			final BufferedImage image = exporter.render();
-			saveToDisk(args, image);
-		} catch (AnalysisServerError | IOException | AnalysisException e) {
-			fail(e.getMessage());
-		}
+		args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
+		render(args);
 	}
 
 	@Test
@@ -68,13 +78,7 @@ public class FireworksExporterTest {
 		args.setFlags(Collections.singletonList("CTP"));
 		args.setFactor(2.);
 		args.setWriteTitle(true);
-		try {
-			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
-			final BufferedImage image = exporter.render();
-			saveToDisk(args, image);
-		} catch ( IOException | AnalysisServerError | AnalysisException e) {
-			fail(e.getMessage());
-		}
+		render(args);
 	}
 
 	@Test
@@ -83,38 +87,40 @@ public class FireworksExporterTest {
 		args.setFactor(2.);
 		try {
 			args.setToken(createEnrichmentToken());
-			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
-			final BufferedImage image = exporter.render();
-			saveToDisk(args, image);
-		} catch ( IOException | AnalysisServerError | AnalysisException e) {
+		} catch (IOException | AnalysisException | AnalysisServerError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
+		render(args);
 	}
 
 	@Test
 	public void testExpression() {
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
-		args.setFactor(2.);
+//		args.setFactor(2.);
 		args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
-//		args.setFlags(Arrays.asList("CTP"));
 		args.setProfile("Calcium Salts");
 		args.setColumn(1);
 		try {
 			args.setToken(createExpressionToken());
-			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
-			final BufferedImage image = exporter.render();
-			saveToDisk(args, image);
 		} catch ( IOException | AnalysisServerError | AnalysisException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
+		render(args);
+	}
+
+	@Test
+	public void testTitle() {
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "gif");
+		args.setFactor(2.);
+		args.setWriteTitle(true);
+		render(args);
 	}
 
 	@Test
 	public void testAnimatedGif() {
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "gif");
-		args.setFactor(2.);
 		args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
 //		args.setFlags(Arrays.asList("CTP"));
 		args.setProfile("Copper plus");
@@ -132,17 +138,14 @@ public class FireworksExporterTest {
 		}
 	}
 
-	@Test
-	public void testTitle() {
-		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "gif");
-		args.setFactor(2.);
-		args.setWriteTitle(true);
+	private void render(FireworkArgs args){
 		try {
 			final FireworksExporter exporter = new FireworksExporter(args, FIREWORK_PATH);
 			final BufferedImage image = exporter.render();
-			saveToDisk(args, image);
-		} catch (AnalysisServerError | AnalysisException | IOException analysisServerError) {
-			analysisServerError.printStackTrace();
+			if (save) saveToDisk(args, image);
+		} catch (IOException | AnalysisServerError | AnalysisException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
 		}
 	}
 

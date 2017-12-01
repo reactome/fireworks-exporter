@@ -51,7 +51,7 @@ public class FireworksIndex {
 		return index.keySet();
 	}
 
-	FireworksDecorator getDecorator() {
+	public FireworksDecorator getDecorator() {
 		return decorator;
 	}
 
