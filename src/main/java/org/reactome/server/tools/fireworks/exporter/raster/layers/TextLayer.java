@@ -33,7 +33,7 @@ public class TextLayer extends CommonLayer {
 			final int lineWidth = graphics.getFontMetrics().charsWidth(line.toCharArray(), 0, line.length());
 			float x = (float) (text.nodePosition.getX() - 0.5 * lineWidth);
 			graphics.drawString(line, x, y);
-			y += 1.75 * FontProperties.DEFAULT_FONT.getSize();
+			y += 1.25 * FontProperties.DEFAULT_FONT.getSize();
 		}
 	}
 

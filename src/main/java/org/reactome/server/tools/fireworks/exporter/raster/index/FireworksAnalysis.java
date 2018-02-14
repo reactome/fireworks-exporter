@@ -1,13 +1,10 @@
 package org.reactome.server.tools.fireworks.exporter.raster.index;
 
+import org.reactome.server.analysis.core.model.AnalysisType;
+import org.reactome.server.analysis.core.result.AnalysisStoredResult;
+import org.reactome.server.analysis.core.result.model.PathwaySummary;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksNode;
-import org.reactome.server.tools.fireworks.exporter.common.analysis.AnalysisClient;
-import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisException;
-import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisServerError;
-import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisResult;
-import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisType;
-import org.reactome.server.tools.fireworks.exporter.common.analysis.model.PathwaySummary;
 import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
 import org.reactome.server.tools.fireworks.exporter.common.profiles.FireworksColorProfile;
 import org.reactome.server.tools.fireworks.exporter.common.profiles.GradientColorProfile;
@@ -21,7 +18,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
@@ -44,33 +41,35 @@ public class FireworksAnalysis {
 
 
 	private AnalysisType type;
-	private PathwaySummary[] pathwaySummary;
-	private AnalysisResult result;
+	private List<PathwaySummary> pathwaySummary;
+	private AnalysisStoredResult result;
 	private FireworksIndex index;
 	private FireworksGraph layout;
 	private FireworkArgs args;
 	private Rectangle2D.Double colorBar;
 
-	FireworksAnalysis(FireworksIndex index, FireworksGraph layout, FireworkArgs args) throws AnalysisServerError, AnalysisException {
-		if (args.getToken() == null) return;
+	FireworksAnalysis(FireworksIndex index, FireworksGraph layout, FireworkArgs args, AnalysisStoredResult result) {
 		this.index = index;
 		this.layout = layout;
 		this.args = args;
-		this.result = AnalysisClient.getAnalysisResult(args.getToken());
-		this.type = AnalysisType.getType(result.getSummary().getType());
+		this.result = result;
+		this.type = result == null ? null : AnalysisType.getType(result.getSummary().getType());
 		analyse();
 	}
 
-	private void analyse() throws AnalysisException, AnalysisServerError {
-		final Collection<String> pathways = layout.getNodes().stream()
+	private void analyse() {
+		if (result == null) return;
+		final List<String> pathways = layout.getNodes().stream()
 				.map(FireworksNode::getStId)
-				.collect(Collectors.toSet());
+				.distinct()
+				.collect(Collectors.toList());
 		final String resource = args.getResource() == null
 				? result.getResourceSummary().size() == 2
 				? result.getResourceSummary().get(1).getResource()
 				: result.getResourceSummary().get(0).getResource()
 				: args.getResource();
-		this.pathwaySummary = AnalysisClient.getPathwaysSummary(pathways, args.getToken(), resource);
+//		this.pathwaySummary = AnalysisClient.getPathwaysSummary(pathways, args.getToken(), resource);
+		this.pathwaySummary = result.filterByPathways(pathways, resource);
 		if (type == AnalysisType.EXPRESSION) {
 			expression();
 		} else if (type == AnalysisType.OVERREPRESENTATION
@@ -153,8 +152,8 @@ public class FireworksAnalysis {
 		final String topText;
 		final String bottomText;
 		if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
-			topText = EXPRESSION_FORMAT.format(index.getAnalysis().getResult().getExpression().getMax());
-			bottomText = EXPRESSION_FORMAT.format(index.getAnalysis().getResult().getExpression().getMin());
+			topText = EXPRESSION_FORMAT.format(result.getExpressionSummary().getMax());
+			bottomText = EXPRESSION_FORMAT.format(result.getExpressionSummary().getMin());
 		} else {
 			topText = ENRICHMENT_FORMAT.format(0);
 			bottomText = ENRICHMENT_FORMAT.format(P_VALUE_THRESHOLD);
@@ -164,7 +163,7 @@ public class FireworksAnalysis {
 	}
 
 
-	public AnalysisResult getResult() {
+	public AnalysisStoredResult getResult() {
 		return result;
 	}
 
@@ -188,8 +187,8 @@ public class FireworksAnalysis {
 				if (node.getExp() == null)
 					continue;
 				final double value = node.getExp().get(col);
-				val = 1 - (value - result.getExpression().getMin()) /
-						(result.getExpression().getMax() - result.getExpression().getMin());
+				val = 1 - (value - result.getExpressionSummary().getMin()) /
+						(result.getExpressionSummary().getMax() - result.getExpressionSummary().getMin());
 			} else {
 				if (node.getpValue() == null)
 					continue;

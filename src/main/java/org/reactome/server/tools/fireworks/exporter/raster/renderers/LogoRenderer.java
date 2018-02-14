@@ -1,9 +1,9 @@
 package org.reactome.server.tools.fireworks.exporter.raster.renderers;
 
+import org.reactome.server.analysis.core.model.AnalysisType;
 import org.reactome.server.tools.diagram.data.layout.NodeProperties;
 import org.reactome.server.tools.diagram.data.layout.impl.NodePropertiesFactory;
 import org.reactome.server.tools.fireworks.exporter.common.ResourcesFactory;
-import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisType;
 import org.reactome.server.tools.fireworks.exporter.raster.index.FireworksAnalysis;
 import org.reactome.server.tools.fireworks.exporter.raster.layers.FireworksCanvas;
 import org.reactome.server.tools.fireworks.exporter.raster.properties.FontProperties;
@@ -50,19 +50,31 @@ public class LogoRenderer {
 
 	public void infoText(FireworksCanvas canvas, FireworksAnalysis analysis, String title, int col) {
 		if (infoBox == null) createInfoBox(canvas);
-		String text = "";
-		if (title != null)
-			text = title + " ";
-		if (analysis.getType() == AnalysisType.EXPRESSION) {
-			text += String.format("[%s] %d/%d %s",
-					analysis.getResult().getSummary().getSampleName(),
-					col + 1,
-					analysis.getResult().getExpression().getColumnNames().size(),
-					analysis.getResult().getExpression().getColumnNames().get(col));
-		} else
-			text += analysis.getResult().getSummary().getSampleName();
+		String text = getText(analysis, title, col);
 		canvas.getInfoText().clear();
 		canvas.getInfoText().add(text, Color.BLACK, infoBox, FontProperties.DEFAULT_FONT);
+	}
+
+	private String getText(FireworksAnalysis analysis, String title, int col) {
+			/*
+		null                -> Homo sapiens
+		OVERREPRESENTATION  -> Homo sapiens (Gene names from liver)
+		SPECIES_COMPARISON  -> Homo sapiens (Canis familiaris)
+		EXPRESSION          -> Homo sapiens (Probeset) 1/5 10h_control
+		 */
+		final StringBuilder text = new StringBuilder();
+		if (title != null) text.append(title);
+		if (analysis.getType() == null) return text.toString();
+		if (analysis.getType() == AnalysisType.OVERREPRESENTATION)
+			text.append(" (").append(analysis.getResult().getSummary().getSampleName()).append(")");
+		else if (analysis.getType() == AnalysisType.SPECIES_COMPARISON)
+			text.append(" (").append(analysis.getResult().getSummary().getSpecies()).append(")");
+		else if (analysis.getType() == AnalysisType.EXPRESSION)
+			text.append(" (").append(analysis.getResult().getSummary().getSampleName()).append(")")
+					.append(" ").append(col + 1).append("/")
+					.append(analysis.getResult().getExpressionSummary().getColumnNames().size())
+			.append(" ").append(analysis.getResult().getExpressionSummary().getColumnNames().get(col));
+		return text.toString();
 	}
 
 	public void writeTitle(FireworksCanvas canvas, String title) {
