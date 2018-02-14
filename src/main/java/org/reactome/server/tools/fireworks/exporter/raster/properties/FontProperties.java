@@ -7,6 +7,6 @@ import java.awt.*;
  */
 public class FontProperties {
 
-	public static final Font DEFAULT_FONT = new Font("arial", Font.PLAIN, 8);
+	public static final Font DEFAULT_FONT = new Font("sans serif", Font.BOLD, 15);
 
 }

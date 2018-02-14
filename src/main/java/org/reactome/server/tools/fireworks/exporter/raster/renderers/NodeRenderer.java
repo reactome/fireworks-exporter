@@ -1,6 +1,6 @@
 package org.reactome.server.tools.fireworks.exporter.raster.renderers;
 
-import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisType;
+import org.reactome.server.analysis.core.model.AnalysisType;
 import org.reactome.server.tools.fireworks.exporter.common.profiles.ColorFactory;
 import org.reactome.server.tools.fireworks.exporter.common.profiles.FireworksColorProfile;
 import org.reactome.server.tools.fireworks.exporter.raster.index.FireworksAnalysis;
@@ -15,12 +15,12 @@ import java.awt.geom.Point2D;
 /**
  * Renders nodes, that's why its called {@link NodeRenderer}
  */
-class NodeRenderer {
+public class NodeRenderer {
 
 	private static final double MIN_NODE_SIZE = 0.025;
-	private static final int NODE_FACTOR = 18;
-	private static final Stroke SELECTION_STROKE = new BasicStroke(0.3f);
-	private static final Stroke FLAG_STROKE = new BasicStroke(0.7f);
+	private static final int NODE_FACTOR = 75; // default 18
+	private static final Stroke SELECTION_STROKE = new BasicStroke(1);
+	private static final Stroke FLAG_STROKE = new BasicStroke(2);
 	private final FireworksColorProfile profile;
 	private final FireworksIndex index;
 	private final FireworksCanvas canvas;
@@ -57,8 +57,8 @@ class NodeRenderer {
 		if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
 			if (node.getExp() != null) {
 				if (node.getpValue() <= FireworksAnalysis.P_VALUE_THRESHOLD) {
-					final double min = index.getAnalysis().getResult().getExpression().getMin();
-					final double max = index.getAnalysis().getResult().getExpression().getMax();
+					final double min = index.getAnalysis().getResult().getExpressionSummary().getMin();
+					final double max = index.getAnalysis().getResult().getExpressionSummary().getMax();
 					final double val = 1 - (node.getExp().get(0) - min) / (max - min);
 					return ColorFactory.interpolate(profile.getNode().getExpression(), val);
 				}

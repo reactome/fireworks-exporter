@@ -1,6 +1,6 @@
 package org.reactome.server.tools.fireworks.exporter.raster.renderers;
 
-import org.reactome.server.tools.fireworks.exporter.common.analysis.model.AnalysisType;
+import org.reactome.server.analysis.core.model.AnalysisType;
 import org.reactome.server.tools.fireworks.exporter.common.profiles.ColorFactory;
 import org.reactome.server.tools.fireworks.exporter.common.profiles.FireworksColorProfile;
 import org.reactome.server.tools.fireworks.exporter.raster.index.Edge;
@@ -14,11 +14,11 @@ import java.awt.geom.Path2D;
 /**
  * Renders edges.
  */
-class EdgeRenderer {
+public class EdgeRenderer {
 
-	private static final Stroke DEFAULT_STROKE = new BasicStroke(0.2f);
-	private static final Stroke SELECTION_STROKE = new BasicStroke(0.4f);
-	private static final Stroke FLAG_STROKE = new BasicStroke(0.6f);
+	private static final Stroke DEFAULT_STROKE = new BasicStroke(3);
+	private static final Stroke SELECTION_STROKE = new BasicStroke(4);
+	private static final Stroke FLAG_STROKE = new BasicStroke(5);
 	private final FireworksColorProfile profile;
 	private final FireworksIndex index;
 	private final FireworksCanvas canvas;
@@ -26,7 +26,7 @@ class EdgeRenderer {
 	/**
 	 * Creates an EdgeRenderer.
 	 */
-	EdgeRenderer(FireworksColorProfile profile, FireworksIndex index, FireworksCanvas canvas) {
+	public EdgeRenderer(FireworksColorProfile profile, FireworksIndex index, FireworksCanvas canvas) {
 		this.profile = profile;
 		this.index = index;
 		this.canvas = canvas;
@@ -64,8 +64,8 @@ class EdgeRenderer {
 		if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
 			if (edge.getTo().getExp() != null) {
 				if (edge.getpValue() <= FireworksAnalysis.P_VALUE_THRESHOLD) {
-					final double min = index.getAnalysis().getResult().getExpression().getMin();
-					final double max = index.getAnalysis().getResult().getExpression().getMax();
+					final double min = index.getAnalysis().getResult().getExpressionSummary().getMin();
+					final double max = index.getAnalysis().getResult().getExpressionSummary().getMax();
 					final double val = 1 - (edge.getTo().getExp().get(0) - min) / (max - min);
 					return ColorFactory.interpolate(profile.getEdge().getExpression(), val);
 				} else return profile.getEdge().getHit();
