@@ -9,19 +9,37 @@ import org.reactome.server.tools.fireworks.exporter.common.ResourcesFactory;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisServerError;
 import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
 import org.reactome.server.tools.fireworks.exporter.raster.FireworksRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.OutputStream;
 
 public class FireworksExporter {
+
+	private static final Logger logger = LoggerFactory.getLogger("infoLogger");
+
 	private final String fireworkPath;
 	private final TokenUtils tokenUtils;
 
 	public FireworksExporter(String fireworkPath, String analysisPath) {
 		this.fireworkPath = fireworkPath;
 		this.tokenUtils = new TokenUtils(analysisPath);
+		loadFonts();
 	}
 
+	private void loadFonts() {
+		final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		try {
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("fonts/arial.ttf")));
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("fonts/arialbd.ttf")));
+		} catch (FontFormatException | IOException e) {
+			// resources shouldn't throw exceptions
+			logger.error("Couldn't load font", e);
+		}
+	}
 	/**
 	 * If result is null, then it tries to load analysis using the token.
 	 */
