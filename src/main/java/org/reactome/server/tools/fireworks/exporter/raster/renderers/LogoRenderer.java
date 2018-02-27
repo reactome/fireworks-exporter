@@ -49,6 +49,7 @@ public class LogoRenderer {
 
 
 	public void infoText(FireworksCanvas canvas, FireworksAnalysis analysis, String title, int col) {
+		if (title == null) return;
 		if (infoBox == null) createInfoBox(canvas);
 		String text = getText(analysis, title, col);
 		canvas.getInfoText().clear();
