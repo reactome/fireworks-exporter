@@ -91,11 +91,23 @@
     <build>
         <finalName>${project.name}</finalName>
 
+        <!-- Add this if you are having problems with the fonts resources -->
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/*.ttf</exclude>
+                </excludes>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.ttf</include>
+                </includes>
+            </resource>
+
         </resources>
 
         <testResources>
