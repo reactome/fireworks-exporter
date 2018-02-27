@@ -136,7 +136,7 @@ public class FireworksRendererTest {
 	}
 
 	@Test
-	public void testTitleOverrepresentation() {
+	public void testTitleOverRepresentation() {
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
 		args.setWriteTitle(true);
 		render(args, TOKEN_UTILS.getFromToken(TOKEN_OVER_1));
