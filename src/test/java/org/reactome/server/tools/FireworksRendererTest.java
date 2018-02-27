@@ -34,7 +34,7 @@ public class FireworksRendererTest {
 	private static final String ANALYSIS_PATH = "src/test/resources/org/reactome/server/tools/fireworks/exporter/analysis";
 	private static final String FIREWORK_PATH = "src/test/resources/org/reactome/server/tools/fireworks/exporter/layouts";
 	private static final File IMAGE_FOLDER = new File("test-image");
-	private static final boolean save = true;
+	private static final boolean save = false;
 
 	private static final TokenUtils TOKEN_UTILS = new TokenUtils(ANALYSIS_PATH);
 	private static final FireworksExporter exporter = new FireworksExporter(FIREWORK_PATH, ANALYSIS_PATH);
@@ -136,7 +136,7 @@ public class FireworksRendererTest {
 	}
 
 	@Test
-	public void testTitleOverrepresentation() {
+	public void testTitleOverRepresentation() {
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
 		args.setWriteTitle(true);
 		render(args, TOKEN_UTILS.getFromToken(TOKEN_OVER_1));
