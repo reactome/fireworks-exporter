@@ -32,4 +32,6 @@ local.properties
 *.lic
 *.lic.xml
 
-test-image
+test-image/
+
+logs/
