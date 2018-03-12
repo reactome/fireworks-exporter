@@ -50,10 +50,8 @@ public class FireworksRenderer {
 		index.getNodes().forEach(nodeRenderer::render);
 		final EdgeRenderer edgeRenderer = new EdgeRenderer(profile, index, canvas);
 		index.getEdges().forEach(edgeRenderer::render);
-		if (result != null) {
-			if (index.getAnalysis().getType() == AnalysisType.EXPRESSION)
-				index.getAnalysis().addLegend(canvas, profile);
-		}
+		if (result != null)
+			index.getAnalysis().addLegend(canvas, profile);
 		logoRenderer.addLogo(canvas);
 	}
 

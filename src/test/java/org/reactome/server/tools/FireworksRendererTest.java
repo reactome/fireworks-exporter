@@ -87,6 +87,7 @@ public class FireworksRendererTest {
 	public void testEnrichment() {
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
 		args.setFactor(2.);
+		args.setSelected(Arrays.asList("R-HSA-196783"));
 		args.setToken(TOKEN_OVER_1);
 		render(args, null);
 	}
