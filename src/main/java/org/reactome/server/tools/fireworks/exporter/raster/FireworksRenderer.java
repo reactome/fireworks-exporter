@@ -1,5 +1,9 @@
 package org.reactome.server.tools.fireworks.exporter.raster;
 
+import org.apache.batik.anim.dom.SVG12DOMImplementation;
+import org.apache.batik.svggen.SVGGeneratorContext;
+import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.batik.util.SVGConstants;
 import org.reactome.server.analysis.core.model.AnalysisType;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
@@ -13,6 +17,9 @@ import org.reactome.server.tools.fireworks.exporter.raster.properties.FontProper
 import org.reactome.server.tools.fireworks.exporter.raster.renderers.EdgeRenderer;
 import org.reactome.server.tools.fireworks.exporter.raster.renderers.LogoRenderer;
 import org.reactome.server.tools.fireworks.exporter.raster.renderers.NodeRenderer;
+import org.reactome.server.tools.fireworks.exporter.raster.svg.GradientHandler;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.svg.SVGDocument;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -24,6 +31,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class FireworksRenderer {
+
+	private static final DOMImplementation SVG_IMPL = SVG12DOMImplementation.getDOMImplementation();
+
 	private static final int MARGIN = 15;
 	private static final Set<String> TRANSPARENT_FORMATS = new HashSet<>(Collections.singletonList("png"));
 	private static final Set<String> NO_TRANSPARENT_FORMATS = new HashSet<>(Arrays.asList("jpg", "jpeg", "gif"));
@@ -145,4 +155,26 @@ public class FireworksRenderer {
 		return graphics;
 	}
 
+	public SVGDocument renderToSvg() {
+		final SVGDocument document = (SVGDocument) SVG_IMPL.createDocument(SVGConstants.SVG_NAMESPACE_URI, "svg", null);
+		final SVGGeneratorContext ctx = SVGGeneratorContext.createDefault(document);
+		ctx.setExtensionHandler(new GradientHandler());
+		final SVGGraphics2D graphics2D = new SVGGraphics2D(ctx, true);
+		graphics2D.setFont(FontProperties.DEFAULT_FONT);
+		canvas.render(graphics2D);
+		// Do not know how to extract SVG doc from SVGGraphics2D, so I take the
+		// root and append to my document as root
+		document.removeChild(document.getRootElement());
+		document.appendChild(graphics2D.getRoot());
+
+		final Rectangle2D bounds = canvas.getBounds();
+		int width = (int) ((2 * MARGIN + bounds.getWidth()) + 0.5);
+		int height = (int) ((2 * MARGIN + bounds.getHeight()) + 0.5);
+		int minX = (int) ((MARGIN - bounds.getMinX()) + 0.5);
+		int minY = (int) ((MARGIN - bounds.getMinY()) + 0.5);
+
+		final String viewBox = String.format("%d %d %d %d", -minX, -minY, width, height);
+		document.getRootElement().setAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE, viewBox);
+		return document;
+	}
 }

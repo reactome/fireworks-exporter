@@ -1,5 +1,7 @@
 package org.reactome.server.tools.fireworks.exporter;
 
+import org.apache.batik.transcoder.TranscoderException;
+import org.reactome.server.analysis.core.model.AnalysisType;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
 import org.reactome.server.analysis.core.result.exception.ResourceGoneException;
 import org.reactome.server.analysis.core.result.exception.ResourceNotFoundException;
@@ -8,9 +10,13 @@ import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
 import org.reactome.server.tools.fireworks.exporter.common.ResourcesFactory;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisServerError;
 import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
+import org.reactome.server.tools.fireworks.exporter.raster.FireworksOutput;
 import org.reactome.server.tools.fireworks.exporter.raster.FireworksRenderer;
+import org.w3c.dom.svg.SVGDocument;
 
 import java.awt.image.BufferedImage;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 public class FireworksExporter {
@@ -37,6 +43,26 @@ public class FireworksExporter {
 		new FireworksRenderer(layout, args, getResult(args.getToken(), result)).renderToGif(os);
 	}
 
+	public SVGDocument renderSvg(FireworkArgs args, AnalysisStoredResult result) throws AnalysisServerError {
+		final FireworksGraph layout = ResourcesFactory.getGraph(fireworkPath, args.getSpeciesName());
+		return new FireworksRenderer(layout, args, getResult(args.getToken(), result)).renderToSvg();
+	}
+
+	public void render(FireworkArgs args, AnalysisStoredResult result, OutputStream os) throws AnalysisServerError, TranscoderException, IOException {
+		final AnalysisType type = result == null
+				? null
+				: AnalysisType.valueOf(result.getSummary().getType());
+		final FireworksGraph layout = ResourcesFactory.getGraph(fireworkPath, args.getSpeciesName());
+		final FireworksRenderer renderer = new FireworksRenderer(layout, args, getResult(args.getToken(), result));
+		if (args.getFormat().equalsIgnoreCase("svg"))
+			FireworksOutput.save(renderer.renderToSvg(), os);
+		else if (args.getFormat().equalsIgnoreCase("gif")
+				&& args.getColumn() == null
+				&& type == AnalysisType.EXPRESSION)
+			renderer.renderToGif(os);
+		else FireworksOutput.save(renderer.render(), args.getFormat(), os);
+	}
+
 	private AnalysisStoredResult getResult(String token, AnalysisStoredResult result) throws AnalysisServerError {
 		if (result != null) return result;
 		if (token == null) return null;
@@ -47,5 +73,9 @@ public class FireworksExporter {
 		} catch (ResourceNotFoundException e) {
 			throw new AnalysisServerError("Token not valid: " + token);
 		}
+	}
+
+	public void render(FireworkArgs args, FileOutputStream os) throws IOException, AnalysisServerError, TranscoderException {
+		render(args, null, os);
 	}
 }
