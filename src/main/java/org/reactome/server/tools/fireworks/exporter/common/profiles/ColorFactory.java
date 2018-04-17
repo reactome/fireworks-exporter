@@ -2,6 +2,7 @@ package org.reactome.server.tools.fireworks.exporter.common.profiles;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +13,7 @@ import java.util.regex.Pattern;
  */
 public class ColorFactory {
 	private final static Pattern RGBA = Pattern.compile("^rgba\\(\\s*(0|[1-9]\\d?|1\\d\\d?|2[0-4]\\d|25[0-5])\\s*,\\s*(0|[1-9]\\d?|1\\d\\d?|2[0-4]\\d|25[0-5])\\s*,\\s*(0|[1-9]\\d?|1\\d\\d?|2[0-4]\\d|25[0-5])\\s*,\\s*((0.[0-9]+)|[01]|1.0*)\\s*\\)$");
+	private static final float INV_255 = 0.003921569f; // 1 / 255
 
 	// speed up with a color cache
 	// of course, this shouldn't be necessary if the Profiles already had the
@@ -29,7 +31,7 @@ public class ColorFactory {
 				: rgbaToColor(color);
 	}
 
-	private static Color hexToColor(String input) {
+	public static Color hexToColor(String input) {
 		int r = Integer.valueOf(input.substring(1, 3), 16);
 		int g = Integer.valueOf(input.substring(3, 5), 16);
 		int b = Integer.valueOf(input.substring(5, 7), 16);
@@ -66,6 +68,21 @@ public class ColorFactory {
 				(int) (a.getGreen() + (b.getGreen() - a.getGreen()) * scale),
 				(int) (a.getBlue() + (b.getBlue() - a.getBlue()) * scale),
 				(int) (a.getAlpha() + (b.getAlpha() - a.getAlpha()) * scale));
+	}
+
+
+	public static String hex(Color color) {
+		return String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
+	}
+
+	@SuppressWarnings("unused")
+	public static String rgba(Color color) {
+		final float alpha = color.getAlpha() * INV_255;
+		String a;
+		if (alpha > 0.99) a = "1";
+		else a = String.format("%.2f", alpha);
+		return String.format(Locale.UK, "rgba(%d,%d,%d,%s)", color.getRed(),
+				color.getGreen(), color.getBlue(), a);
 	}
 
 }

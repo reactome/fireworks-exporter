@@ -1,7 +1,9 @@
 package org.reactome.server.tools;
 
 
+import org.apache.batik.transcoder.TranscoderException;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
@@ -148,6 +150,32 @@ public class FireworksRendererTest {
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
 		args.setWriteTitle(true);
 		render(args, TOKEN_UTILS.getFromToken(TOKEN_SPECIES));
+	}
+
+	@Test
+	public void testToSvg() {
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "svg");
+		try {
+			final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens.svg"));
+			exporter.render(args, os);
+		} catch (AnalysisServerError | TranscoderException | IOException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testToSvgWithAnalysis() {
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "svg");
+		args.setToken("MjAxODAyMTIxMTMwNDhfMw==");
+		args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
+		try {
+			final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens_expression.svg"));
+			exporter.render(args, os);
+		} catch (AnalysisServerError | TranscoderException | IOException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
 	}
 
 	private void renderGif(FireworkArgs args, AnalysisStoredResult result) {
