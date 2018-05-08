@@ -16,9 +16,9 @@ import java.awt.geom.Path2D;
  */
 public class EdgeRenderer {
 
-	private static final Stroke DEFAULT_STROKE = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
-	private static final Stroke SELECTION_STROKE = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
-	private static final Stroke FLAG_STROKE = new BasicStroke(5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
+	private static final Stroke DEFAULT_STROKE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
+	private static final Stroke SELECTION_STROKE = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
+	private static final Stroke FLAG_STROKE = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
 	private final FireworksColorProfile profile;
 	private final FireworksIndex index;
 	private final FireworksCanvas canvas;
