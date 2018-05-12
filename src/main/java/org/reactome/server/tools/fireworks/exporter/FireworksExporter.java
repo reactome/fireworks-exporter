@@ -1,5 +1,6 @@
 package org.reactome.server.tools.fireworks.exporter;
 
+import com.itextpdf.layout.Document;
 import org.apache.batik.transcoder.TranscoderException;
 import org.reactome.server.analysis.core.model.AnalysisType;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
@@ -46,6 +47,11 @@ public class FireworksExporter {
 	public SVGDocument renderSvg(FireworkArgs args, AnalysisStoredResult result) throws AnalysisServerError {
 		final FireworksGraph layout = ResourcesFactory.getGraph(fireworkPath, args.getSpeciesName());
 		return new FireworksRenderer(layout, args, getResult(args.getToken(), result)).renderToSvg();
+	}
+
+	public void render(FireworkArgs args, Document document, AnalysisStoredResult result) throws AnalysisServerError {
+		final FireworksGraph layout = ResourcesFactory.getGraph(fireworkPath, args.getSpeciesName());
+		new FireworksRenderer(layout, args, getResult(args.getToken(), result)).render(document);
 	}
 
 	public void render(FireworkArgs args, AnalysisStoredResult result, OutputStream os) throws AnalysisServerError, TranscoderException, IOException {
