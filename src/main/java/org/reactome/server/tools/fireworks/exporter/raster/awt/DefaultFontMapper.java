@@ -49,7 +49,7 @@ import com.itextpdf.io.font.constants.FontStyles;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import org.apache.commons.io.IOUtils;
-import org.reactome.server.tools.diagram.exporter.raster.resources.Resources;
+import org.reactome.server.tools.fireworks.exporter.raster.properties.FontProperties;
 
 import java.awt.*;
 import java.io.IOException;
@@ -69,9 +69,9 @@ public class DefaultFontMapper {
 	public DefaultFontMapper() {
 		byte[] bytes;
 		try {
-			bytes = IOUtils.toByteArray(Resources.class.getResourceAsStream("fonts/arial.ttf"));
+			bytes = IOUtils.toByteArray(FontProperties.class.getResourceAsStream("fonts/arial.ttf"));
 			REGULAR = PdfFontFactory.createFont(bytes, PdfEncodings.UTF8, true, true);
-			bytes = IOUtils.toByteArray(Resources.class.getResourceAsStream("fonts/arialbd.ttf"));
+			bytes = IOUtils.toByteArray(FontProperties.class.getResourceAsStream("fonts/arialbd.ttf"));
 			BOLD = PdfFontFactory.createFont(bytes, PdfEncodings.UTF8, true, true);
 		} catch (IOException e) {
 			e.printStackTrace();

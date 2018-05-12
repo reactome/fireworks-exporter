@@ -54,8 +54,8 @@ import com.itextpdf.kernel.pdf.canvas.PdfCanvasConstants;
 import com.itextpdf.kernel.pdf.colorspace.PdfPattern;
 import com.itextpdf.kernel.pdf.colorspace.PdfShading;
 import com.itextpdf.kernel.pdf.extgstate.PdfExtGState;
-import org.reactome.server.tools.diagram.exporter.raster.diagram.common.FontProperties;
-import org.reactome.server.tools.diagram.exporter.raster.itext.awt.geom.PolylineShape;
+import org.reactome.server.tools.fireworks.exporter.raster.awt.geom.PolylineShape;
+import org.reactome.server.tools.fireworks.exporter.raster.properties.FontProperties;
 
 import java.awt.*;
 import java.awt.RenderingHints.Key;
@@ -79,14 +79,14 @@ public class PdfGraphics2D extends Graphics2D {
 	private static final int STROKE = 2;
 	private static final int CLIP = 3;
 	private static final AffineTransform IDENTITY = new AffineTransform();
-	protected Font font;
-	protected AffineTransform transform;
-	protected Color background;
+	private Font font;
+	private AffineTransform transform;
+	private Color background;
 	protected float x;
 	protected float y;
 	protected float width;
 	protected float height;
-	protected Stroke stroke;
+	private Stroke stroke;
 	private PdfFont baseFont;
 	private float fontSize;
 	private Paint paint;
@@ -786,31 +786,6 @@ public class PdfGraphics2D extends Graphics2D {
 		}
 	}
 
-	/**
-	 * Method contributed by Alexej Suchov
-	 *
-	 * @see Graphics2D#setPaint(Paint)
-	 */
-	@Override
-	public void setPaint(Paint paint) {
-		if (paint == null)
-			return;
-		this.paint = paint;
-		realPaint = paint;
-
-		if (composite instanceof AlphaComposite && paint instanceof Color) {
-
-			AlphaComposite co = (AlphaComposite) composite;
-
-			if (co.getRule() == 3) {
-				Color c = (Color) paint;
-				this.paint = new Color(c.getRed(), c.getGreen(), c.getBlue(), (int) (c.getAlpha() * alpha));
-				realPaint = paint;
-			}
-		}
-
-	}
-
 	private void setPaint(boolean fill) {
 		if (paint instanceof Color) {
 			Color color = (Color) paint;
@@ -912,6 +887,31 @@ public class PdfGraphics2D extends Graphics2D {
 					canvas.setStrokeColor(new DeviceGray(0.5f));
 			}
 		}
+	}
+
+	/**
+	 * Method contributed by Alexej Suchov
+	 *
+	 * @see Graphics2D#setPaint(Paint)
+	 */
+	@Override
+	public void setPaint(Paint paint) {
+		if (paint == null)
+			return;
+		this.paint = paint;
+		realPaint = paint;
+
+		if (composite instanceof AlphaComposite && paint instanceof Color) {
+
+			AlphaComposite co = (AlphaComposite) composite;
+
+			if (co.getRule() == 3) {
+				Color c = (Color) paint;
+				this.paint = new Color(c.getRed(), c.getGreen(), c.getBlue(), (int) (c.getAlpha() * alpha));
+				realPaint = paint;
+			}
+		}
+
 	}
 
 	/**

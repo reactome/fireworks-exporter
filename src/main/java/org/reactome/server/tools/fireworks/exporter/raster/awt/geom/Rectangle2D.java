@@ -23,8 +23,8 @@
  */
 package org.reactome.server.tools.fireworks.exporter.raster.awt.geom;
 
-import org.reactome.server.tools.diagram.exporter.raster.itext.awt.geom.misc.HashCode;
-import org.reactome.server.tools.diagram.exporter.raster.itext.awt.geom.misc.Messages;
+import org.reactome.server.tools.fireworks.exporter.raster.awt.geom.misc.HashCode;
+import org.reactome.server.tools.fireworks.exporter.raster.awt.geom.misc.Messages;
 
 import java.util.NoSuchElementException;
 

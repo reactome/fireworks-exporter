@@ -23,7 +23,7 @@
  */
 package org.reactome.server.tools.fireworks.exporter.raster.awt.geom;
 
-import org.reactome.server.tools.diagram.exporter.raster.itext.awt.geom.misc.HashCode;
+import org.reactome.server.tools.fireworks.exporter.raster.awt.geom.misc.HashCode;
 
 public abstract class Point2D implements Cloneable {
 

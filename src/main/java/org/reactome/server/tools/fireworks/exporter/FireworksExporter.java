@@ -49,6 +49,10 @@ public class FireworksExporter {
 		return new FireworksRenderer(layout, args, getResult(args.getToken(), result)).renderToSvg();
 	}
 
+	public void render(FireworkArgs args, Document document) throws AnalysisServerError {
+		render(args, document, null);
+	}
+
 	public void render(FireworkArgs args, Document document, AnalysisStoredResult result) throws AnalysisServerError {
 		final FireworksGraph layout = ResourcesFactory.getGraph(fireworkPath, args.getSpeciesName());
 		new FireworksRenderer(layout, args, getResult(args.getToken(), result)).render(document);
