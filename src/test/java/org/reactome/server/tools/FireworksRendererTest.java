@@ -2,6 +2,7 @@ package org.reactome.server.tools;
 
 
 import org.apache.batik.transcoder.TranscoderException;
+import org.apache.commons.io.output.NullOutputStream;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -18,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -172,6 +174,21 @@ public class FireworksRendererTest {
 		try {
 			final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens_expression.svg"));
 			exporter.render(args, os);
+		} catch (AnalysisServerError | TranscoderException | IOException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testPdf() {
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "pdf");
+		final AnalysisStoredResult result = new TokenUtils(ANALYSIS_PATH).getFromToken(TOKEN_EXPRESSION_2);
+		try {
+			final OutputStream os = save
+					? new NullOutputStream()
+					: new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapies.pdf"));
+			exporter.render(args, result, os);
 		} catch (AnalysisServerError | TranscoderException | IOException e) {
 			e.printStackTrace();
 			Assert.fail(e.getMessage());

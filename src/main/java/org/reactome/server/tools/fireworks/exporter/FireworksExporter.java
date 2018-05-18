@@ -1,5 +1,6 @@
 package org.reactome.server.tools.fireworks.exporter;
 
+import com.itextpdf.layout.Document;
 import org.apache.batik.transcoder.TranscoderException;
 import org.reactome.server.analysis.core.model.AnalysisType;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
@@ -48,18 +49,29 @@ public class FireworksExporter {
 		return new FireworksRenderer(layout, args, getResult(args.getToken(), result)).renderToSvg();
 	}
 
+	public Document renderPdf(FireworkArgs args) throws IOException, AnalysisServerError {
+		return renderPdf(args, null);
+	}
+
+	public Document renderPdf(FireworkArgs args, AnalysisStoredResult result) throws AnalysisServerError, IOException {
+		final FireworksGraph layout = ResourcesFactory.getGraph(fireworkPath, args.getSpeciesName());
+		return new FireworksRenderer(layout, args, getResult(args.getToken(), result)).renderToPdf();
+	}
+
 	public void render(FireworkArgs args, AnalysisStoredResult result, OutputStream os) throws AnalysisServerError, TranscoderException, IOException {
 		final AnalysisType type = result == null
 				? null
 				: AnalysisType.valueOf(result.getSummary().getType());
 		final FireworksGraph layout = ResourcesFactory.getGraph(fireworkPath, args.getSpeciesName());
 		final FireworksRenderer renderer = new FireworksRenderer(layout, args, getResult(args.getToken(), result));
-		if (args.getFormat().equalsIgnoreCase("svg"))
-			FireworksOutput.save(renderer.renderToSvg(), os);
-		else if (args.getFormat().equalsIgnoreCase("gif")
+		if (args.getFormat().equalsIgnoreCase("gif")
 				&& args.getColumn() == null
 				&& type == AnalysisType.EXPRESSION)
 			renderer.renderToGif(os);
+		else if (args.getFormat().equalsIgnoreCase("svg"))
+			FireworksOutput.save(renderer.renderToSvg(), os);
+		else if (args.getFormat().equalsIgnoreCase("pdf"))
+			FireworksOutput.save(renderer.renderToPdf(), os);
 		else FireworksOutput.save(renderer.render(), args.getFormat(), os);
 	}
 
