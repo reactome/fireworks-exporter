@@ -103,7 +103,7 @@ public class FireworksRenderer {
 			final byte[] image = createPdfImage();
 			final Document readDoc = new Document(new PdfDocument(new PdfReader(new ByteArrayInputStream(image))));
 			final PdfFormXObject object = readDoc.getPdfDocument().getFirstPage().copyAsFormXObject(document.getPdfDocument());
-			final float wi = document.getPdfDocument().getLastPage().getPageSize().getWidth() - document.getLeftMargin() - document.getRightMargin();
+			final float wi = document.getPdfDocument().getLastPage().getPageSize().getWidth() - document.getLeftMargin() - document.getRightMargin() - 0.1f;
 			final float he = 0.5f * document.getPdfDocument().getLastPage().getPageSize().getHeight() - document.getTopMargin() - document.getBottomMargin();
 			document.add(new com.itextpdf.layout.element.Image(object).scaleToFit(wi, he).setHorizontalAlignment(HorizontalAlignment.CENTER));
 			document.flush();
@@ -226,5 +226,24 @@ public class FireworksRenderer {
 		final String viewBox = String.format("%d %d %d %d", -minX, -minY, width, height);
 		document.getRootElement().setAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE, viewBox);
 		return document;
+	}
+
+	public Document renderToPdf() throws IOException {
+		final Rectangle2D bounds = canvas.getBounds();
+		final ByteArrayOutputStream os = new ByteArrayOutputStream();
+		final Document document = new Document(new PdfDocument(new PdfWriter(os)));
+		document.setMargins(0, 0, 0, 0);
+		final PdfPage page = document.getPdfDocument().addNewPage(new PageSize((float) bounds.getWidth() + 6, (float) bounds.getHeight() + 6));
+		final PdfCanvas pdfCanvas = new PdfCanvas(page);
+		final PdfGraphics2D graphics = new PdfGraphics2D(pdfCanvas, 0, 0, (float) bounds.getWidth() + 6, (float) bounds.getHeight() + 6);
+		graphics.translate(3 - bounds.getX(), 3 - bounds.getY());
+		graphics.setFont(FontProperties.DEFAULT_FONT);
+		graphics.setRenderingHint(
+				RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+		this.canvas.render(graphics);
+		pdfCanvas.release();
+		document.close();
+		return new Document(new PdfDocument(new PdfReader(new ByteArrayInputStream(os.toByteArray()))));
 	}
 }
