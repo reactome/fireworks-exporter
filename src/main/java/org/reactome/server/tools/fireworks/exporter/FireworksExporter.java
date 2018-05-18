@@ -58,15 +58,6 @@ public class FireworksExporter {
 		return new FireworksRenderer(layout, args, getResult(args.getToken(), result)).renderToPdf();
 	}
 
-	public void render(FireworkArgs args, Document document) throws AnalysisServerError {
-		render(args, document, null);
-	}
-
-	public void render(FireworkArgs args, Document document, AnalysisStoredResult result) throws AnalysisServerError {
-		final FireworksGraph layout = ResourcesFactory.getGraph(fireworkPath, args.getSpeciesName());
-		new FireworksRenderer(layout, args, getResult(args.getToken(), result)).render(document);
-	}
-
 	public void render(FireworkArgs args, AnalysisStoredResult result, OutputStream os) throws AnalysisServerError, TranscoderException, IOException {
 		final AnalysisType type = result == null
 				? null
