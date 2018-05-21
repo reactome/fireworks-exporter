@@ -1,5 +1,9 @@
-# intelliJ idea git ignore
+### IntelliJ IDEA ###
 .idea
+*.iws
+*.iml
+*.ipr
+test-files/
 
 *target*
 *.jar
