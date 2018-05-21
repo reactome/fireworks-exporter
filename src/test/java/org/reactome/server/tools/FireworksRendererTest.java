@@ -1,7 +1,10 @@
 package org.reactome.server.tools;
 
 
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.commons.io.output.NullOutputStream;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
@@ -16,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -87,6 +91,7 @@ public class FireworksRendererTest {
 	public void testEnrichment() {
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
 		args.setFactor(2.);
+		args.setSelected(Arrays.asList("R-HSA-196783"));
 		args.setToken(TOKEN_OVER_1);
 		render(args, null);
 	}
@@ -147,6 +152,47 @@ public class FireworksRendererTest {
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
 		args.setWriteTitle(true);
 		render(args, TOKEN_UTILS.getFromToken(TOKEN_SPECIES));
+	}
+
+	@Test
+	public void testToSvg() {
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "svg");
+		try {
+			final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens.svg"));
+			exporter.render(args, os);
+		} catch (AnalysisServerError | TranscoderException | IOException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testToSvgWithAnalysis() {
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "svg");
+		args.setToken("MjAxODAyMTIxMTMwNDhfMw==");
+		args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
+		try {
+			final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens_expression.svg"));
+			exporter.render(args, os);
+		} catch (AnalysisServerError | TranscoderException | IOException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testPdf() {
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "pdf");
+		final AnalysisStoredResult result = new TokenUtils(ANALYSIS_PATH).getFromToken(TOKEN_EXPRESSION_2);
+		try {
+			final OutputStream os = save
+					? new NullOutputStream()
+					: new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapies.pdf"));
+			exporter.render(args, result, os);
+		} catch (AnalysisServerError | TranscoderException | IOException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
 	}
 
 	private void renderGif(FireworkArgs args, AnalysisStoredResult result) {

@@ -1,13 +1,10 @@
 # intelliJ idea git ignore
-*.iml
 .idea
 
 *target*
 *.jar
 *.war
 *.ear
-*.class
-
 # eclipse specific git ignore
 *.pydevproject
 .project
@@ -24,12 +21,17 @@ local.properties
 .settings/
 .loadpath
 
+.DS_Store
+
 # External tool builders
 .externalToolBuilders/
 
 # Locally stored "Eclipse launch configurations"
 *.launch
 
-#OS files
-.DS_Store
-.DS_Store?
+*.lic
+*.lic.xml
+
+test-image/
+
+logs/

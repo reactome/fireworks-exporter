@@ -1,5 +1,8 @@
 package org.reactome.server.tools.fireworks.exporter;
 
+import com.itextpdf.layout.Document;
+import org.apache.batik.transcoder.TranscoderException;
+import org.reactome.server.analysis.core.model.AnalysisType;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
 import org.reactome.server.analysis.core.result.exception.ResourceGoneException;
 import org.reactome.server.analysis.core.result.exception.ResourceNotFoundException;
@@ -8,18 +11,17 @@ import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
 import org.reactome.server.tools.fireworks.exporter.common.ResourcesFactory;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisServerError;
 import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
+import org.reactome.server.tools.fireworks.exporter.raster.FireworksOutput;
 import org.reactome.server.tools.fireworks.exporter.raster.FireworksRenderer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.w3c.dom.svg.SVGDocument;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class FireworksExporter {
 
-	private static final Logger logger = LoggerFactory.getLogger("infoLogger");
 
 	private final String fireworkPath;
 	private final TokenUtils tokenUtils;
@@ -27,19 +29,8 @@ public class FireworksExporter {
 	public FireworksExporter(String fireworkPath, String analysisPath) {
 		this.fireworkPath = fireworkPath;
 		this.tokenUtils = new TokenUtils(analysisPath);
-		loadFonts();
 	}
 
-	private void loadFonts() {
-		final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		try {
-			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("fonts/arial.ttf")));
-			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("fonts/arialbd.ttf")));
-		} catch (FontFormatException | IOException e) {
-			// resources shouldn't throw exceptions
-			logger.error("Couldn't load font", e);
-		}
-	}
 	/**
 	 * If result is null, then it tries to load analysis using the token.
 	 */
@@ -53,6 +44,37 @@ public class FireworksExporter {
 		new FireworksRenderer(layout, args, getResult(args.getToken(), result)).renderToGif(os);
 	}
 
+	public SVGDocument renderSvg(FireworkArgs args, AnalysisStoredResult result) throws AnalysisServerError {
+		final FireworksGraph layout = ResourcesFactory.getGraph(fireworkPath, args.getSpeciesName());
+		return new FireworksRenderer(layout, args, getResult(args.getToken(), result)).renderToSvg();
+	}
+
+	public Document renderPdf(FireworkArgs args) throws IOException, AnalysisServerError {
+		return renderPdf(args, null);
+	}
+
+	public Document renderPdf(FireworkArgs args, AnalysisStoredResult result) throws AnalysisServerError, IOException {
+		final FireworksGraph layout = ResourcesFactory.getGraph(fireworkPath, args.getSpeciesName());
+		return new FireworksRenderer(layout, args, getResult(args.getToken(), result)).renderToPdf();
+	}
+
+	public void render(FireworkArgs args, AnalysisStoredResult result, OutputStream os) throws AnalysisServerError, TranscoderException, IOException {
+		final AnalysisType type = result == null
+				? null
+				: AnalysisType.valueOf(result.getSummary().getType());
+		final FireworksGraph layout = ResourcesFactory.getGraph(fireworkPath, args.getSpeciesName());
+		final FireworksRenderer renderer = new FireworksRenderer(layout, args, getResult(args.getToken(), result));
+		if (args.getFormat().equalsIgnoreCase("gif")
+				&& args.getColumn() == null
+				&& type == AnalysisType.EXPRESSION)
+			renderer.renderToGif(os);
+		else if (args.getFormat().equalsIgnoreCase("svg"))
+			FireworksOutput.save(renderer.renderToSvg(), os);
+		else if (args.getFormat().equalsIgnoreCase("pdf"))
+			FireworksOutput.save(renderer.renderToPdf(), os);
+		else FireworksOutput.save(renderer.render(), args.getFormat(), os);
+	}
+
 	private AnalysisStoredResult getResult(String token, AnalysisStoredResult result) throws AnalysisServerError {
 		if (result != null) return result;
 		if (token == null) return null;
@@ -63,5 +85,9 @@ public class FireworksExporter {
 		} catch (ResourceNotFoundException e) {
 			throw new AnalysisServerError("Token not valid: " + token);
 		}
+	}
+
+	public void render(FireworkArgs args, FileOutputStream os) throws IOException, AnalysisServerError, TranscoderException {
+		render(args, null, os);
 	}
 }

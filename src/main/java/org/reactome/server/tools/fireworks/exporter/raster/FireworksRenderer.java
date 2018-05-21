@@ -1,11 +1,25 @@
 package org.reactome.server.tools.fireworks.exporter.raster;
 
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.kernel.pdf.xobject.PdfFormXObject;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.property.HorizontalAlignment;
+import org.apache.batik.anim.dom.SVG12DOMImplementation;
+import org.apache.batik.svggen.SVGGeneratorContext;
+import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.batik.util.SVGConstants;
 import org.reactome.server.analysis.core.model.AnalysisType;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
 import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
 import org.reactome.server.tools.fireworks.exporter.common.profiles.FireworksColorProfile;
 import org.reactome.server.tools.fireworks.exporter.common.profiles.ProfilesFactory;
+import org.reactome.server.tools.fireworks.exporter.raster.awt.PdfGraphics2D;
 import org.reactome.server.tools.fireworks.exporter.raster.gif.AnimatedGifEncoder;
 import org.reactome.server.tools.fireworks.exporter.raster.index.FireworksIndex;
 import org.reactome.server.tools.fireworks.exporter.raster.layers.FireworksCanvas;
@@ -13,10 +27,16 @@ import org.reactome.server.tools.fireworks.exporter.raster.properties.FontProper
 import org.reactome.server.tools.fireworks.exporter.raster.renderers.EdgeRenderer;
 import org.reactome.server.tools.fireworks.exporter.raster.renderers.LogoRenderer;
 import org.reactome.server.tools.fireworks.exporter.raster.renderers.NodeRenderer;
+import org.reactome.server.tools.fireworks.exporter.raster.svg.GradientHandler;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.svg.SVGDocument;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,6 +44,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class FireworksRenderer {
+
+	private static final DOMImplementation SVG_IMPL = SVG12DOMImplementation.getDOMImplementation();
+
 	private static final int MARGIN = 15;
 	private static final Set<String> TRANSPARENT_FORMATS = new HashSet<>(Collections.singletonList("png"));
 	private static final Set<String> NO_TRANSPARENT_FORMATS = new HashSet<>(Arrays.asList("jpg", "jpeg", "gif"));
@@ -50,10 +73,8 @@ public class FireworksRenderer {
 		index.getNodes().forEach(nodeRenderer::render);
 		final EdgeRenderer edgeRenderer = new EdgeRenderer(profile, index, canvas);
 		index.getEdges().forEach(edgeRenderer::render);
-		if (result != null) {
-			if (index.getAnalysis().getType() == AnalysisType.EXPRESSION)
-				index.getAnalysis().addLegend(canvas, profile);
-		}
+		if (result != null)
+			index.getAnalysis().addLegend(canvas, profile);
 		logoRenderer.addLogo(canvas);
 	}
 
@@ -75,6 +96,43 @@ public class FireworksRenderer {
 		final Graphics2D graphics = createGraphics(image);
 		canvas.render(graphics);
 		return image;
+	}
+
+	public void render(Document document) {
+		try {
+			final byte[] image = createPdfImage();
+			final Document readDoc = new Document(new PdfDocument(new PdfReader(new ByteArrayInputStream(image))));
+			final PdfFormXObject object = readDoc.getPdfDocument().getFirstPage().copyAsFormXObject(document.getPdfDocument());
+			final float wi = document.getPdfDocument().getLastPage().getPageSize().getWidth() - document.getLeftMargin() - document.getRightMargin() - 0.1f;
+			final float he = 0.5f * document.getPdfDocument().getLastPage().getPageSize().getHeight() - document.getTopMargin() - document.getBottomMargin();
+			document.add(new com.itextpdf.layout.element.Image(object).scaleToFit(wi, he).setHorizontalAlignment(HorizontalAlignment.CENTER));
+			document.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Using the current canvas, creates a PdfDocument with the image and
+	 * returns its byte representation.
+	 */
+	private byte[] createPdfImage() {
+		final Rectangle2D bounds = canvas.getBounds();
+		final ByteArrayOutputStream os = new ByteArrayOutputStream();
+		final Document document = new Document(new PdfDocument(new PdfWriter(os)));
+		document.setMargins(0, 0, 0, 0);
+		final PdfPage page = document.getPdfDocument().addNewPage(new PageSize((float) bounds.getWidth() + 6, (float) bounds.getHeight() + 6));
+		final PdfCanvas pdfCanvas = new PdfCanvas(page);
+		final PdfGraphics2D graphics = new PdfGraphics2D(pdfCanvas, 0, 0, (float) bounds.getWidth() + 6, (float) bounds.getHeight() + 6);
+		graphics.translate(3 - bounds.getX(), 3 - bounds.getY());
+		graphics.setFont(FontProperties.DEFAULT_FONT);
+		graphics.setRenderingHint(
+				RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+		this.canvas.render(graphics);
+		pdfCanvas.release();
+		document.close();
+		return os.toByteArray();
 	}
 
 	private void writeInfoText() {
@@ -147,4 +205,45 @@ public class FireworksRenderer {
 		return graphics;
 	}
 
+	public SVGDocument renderToSvg() {
+		final SVGDocument document = (SVGDocument) SVG_IMPL.createDocument(SVGConstants.SVG_NAMESPACE_URI, "svg", null);
+		final SVGGeneratorContext ctx = SVGGeneratorContext.createDefault(document);
+		ctx.setExtensionHandler(new GradientHandler());
+		final SVGGraphics2D graphics2D = new SVGGraphics2D(ctx, true);
+		graphics2D.setFont(FontProperties.DEFAULT_FONT);
+		canvas.render(graphics2D);
+		// Do not know how to extract SVG doc from SVGGraphics2D, so I take the
+		// root and append to my document as root
+		document.removeChild(document.getRootElement());
+		document.appendChild(graphics2D.getRoot());
+
+		final Rectangle2D bounds = canvas.getBounds();
+		int width = (int) ((2 * MARGIN + bounds.getWidth()) + 0.5);
+		int height = (int) ((2 * MARGIN + bounds.getHeight()) + 0.5);
+		int minX = (int) ((MARGIN - bounds.getMinX()) + 0.5);
+		int minY = (int) ((MARGIN - bounds.getMinY()) + 0.5);
+
+		final String viewBox = String.format("%d %d %d %d", -minX, -minY, width, height);
+		document.getRootElement().setAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE, viewBox);
+		return document;
+	}
+
+	public Document renderToPdf() throws IOException {
+		final Rectangle2D bounds = canvas.getBounds();
+		final ByteArrayOutputStream os = new ByteArrayOutputStream();
+		final Document document = new Document(new PdfDocument(new PdfWriter(os)));
+		document.setMargins(0, 0, 0, 0);
+		final PdfPage page = document.getPdfDocument().addNewPage(new PageSize((float) bounds.getWidth() + 6, (float) bounds.getHeight() + 6));
+		final PdfCanvas pdfCanvas = new PdfCanvas(page);
+		final PdfGraphics2D graphics = new PdfGraphics2D(pdfCanvas, 0, 0, (float) bounds.getWidth() + 6, (float) bounds.getHeight() + 6);
+		graphics.translate(3 - bounds.getX(), 3 - bounds.getY());
+		graphics.setFont(FontProperties.DEFAULT_FONT);
+		graphics.setRenderingHint(
+				RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+		this.canvas.render(graphics);
+		pdfCanvas.release();
+		document.close();
+		return new Document(new PdfDocument(new PdfReader(new ByteArrayInputStream(os.toByteArray()))));
+	}
 }
