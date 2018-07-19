@@ -835,7 +835,8 @@ public class PdfGraphics2D extends Graphics2D {
 			final Point2D p2 = gp.getEndPoint();
 			transform.transform(p2, p2);
 			final float[][] colors = Arrays.stream(gp.getColors()).map(color -> color.getColorComponents(null)).toArray(float[][]::new);
-			final AxialShading shading = new AxialShading(DeviceRgb.RED.getColorSpace(), (float) p1.getX(), normalizeY((float) p1.getY()), (float) p2.getX(), normalizeY((float) p2.getY()), colors);			final PdfPattern.Shading pattern = new PdfPattern.Shading(shading);
+			final AxialShading shading = new AxialShading(DeviceRgb.RED.getColorSpace(), (float) p1.getX(), normalizeY((float) p1.getY()), (float) p2.getX(), normalizeY((float) p2.getY()), colors);
+			final PdfPattern.Shading pattern = new PdfPattern.Shading(shading);
 			if (fill) canvas.setFillColorShading(pattern);
 			else canvas.setStrokeColorShading(pattern);
 		} else if (paint instanceof TexturePaint) {
