@@ -12,7 +12,6 @@ import org.reactome.server.analysis.core.result.utils.TokenUtils;
 import org.reactome.server.tools.fireworks.exporter.FireworksExporter;
 import org.reactome.server.tools.fireworks.exporter.common.analysis.exception.AnalysisServerError;
 import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
-import org.reactome.server.tools.fireworks.exporter.raster.index.ContentServiceClient;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -38,7 +37,7 @@ public class FireworksRendererTest {
 	private static final String ANALYSIS_PATH = "src/test/resources/org/reactome/server/tools/fireworks/exporter/analysis";
 	private static final String FIREWORK_PATH = "src/test/resources/org/reactome/server/tools/fireworks/exporter/layouts";
 	private static final File IMAGE_FOLDER = new File("test-image");
-	private static final boolean save = false;
+	private static final boolean save = true;
 
 	private static final TokenUtils TOKEN_UTILS = new TokenUtils(ANALYSIS_PATH);
 	private static final FireworksExporter exporter = new FireworksExporter(FIREWORK_PATH, ANALYSIS_PATH);
@@ -46,7 +45,6 @@ public class FireworksRendererTest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		ContentServiceClient.setHost("https://reactomedev.oicr.on.ca");
 		createImageDir();
 	}
 
@@ -80,9 +78,9 @@ public class FireworksRendererTest {
 
 	@Test
 	public void testFlags() {
-		final FireworkArgs args = new FireworkArgs("Canis_familiaris", "png");
-		args.setFlags(Collections.singletonList("CTP"));
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
 		args.setQuality(8);
+		args.setFlags(Collections.singletonList("R-HSA-450294"));
 		args.setWriteTitle(true);
 		render(args, null);
 	}
