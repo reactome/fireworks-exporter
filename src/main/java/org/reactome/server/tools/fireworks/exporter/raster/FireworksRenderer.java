@@ -47,7 +47,6 @@ public class FireworksRenderer {
 
 	private static final DOMImplementation SVG_IMPL = SVG12DOMImplementation.getDOMImplementation();
 
-	private static final int MARGIN = 15;
 	private static final Set<String> TRANSPARENT_FORMATS = new HashSet<>(Collections.singletonList("png"));
 	private static final Set<String> NO_TRANSPARENT_FORMATS = new HashSet<>(Arrays.asList("jpg", "jpeg", "gif"));
 	private final FireworkArgs args;
@@ -168,8 +167,8 @@ public class FireworksRenderer {
 	private BufferedImage createImage() {
 		final double factor = args.getFactor();
 		final Rectangle2D bounds = canvas.getBounds();
-		final int width = (int) (factor * (2 * MARGIN + bounds.getWidth()) + 0.5);
-		final int height = (int) (factor * (2 * MARGIN + bounds.getHeight()) + 0.5);
+		final int width = (int) (factor * (2 * args.getMargin() + bounds.getWidth()) + 0.5);
+		final int height = (int) (factor * (2 * args.getMargin() + bounds.getHeight()) + 0.5);
 		final String ext = args.getFormat();
 		if (TRANSPARENT_FORMATS.contains(ext))
 			return new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -193,8 +192,8 @@ public class FireworksRenderer {
 		// isn't it nice?
 		final Rectangle2D bounds = canvas.getBounds();
 		final double factor = args.getFactor();
-		final double offsetX = factor * (MARGIN - bounds.getMinX());
-		final double offsetY = factor * (MARGIN - bounds.getMinY());
+		final double offsetX = factor * (args.getMargin() - bounds.getMinX());
+		final double offsetY = factor * (args.getMargin() - bounds.getMinY());
 		graphics.translate(offsetX, offsetY);
 		graphics.scale(factor, factor);
 
@@ -218,10 +217,10 @@ public class FireworksRenderer {
 		document.appendChild(graphics2D.getRoot());
 
 		final Rectangle2D bounds = canvas.getBounds();
-		int width = (int) ((2 * MARGIN + bounds.getWidth()) + 0.5);
-		int height = (int) ((2 * MARGIN + bounds.getHeight()) + 0.5);
-		int minX = (int) ((MARGIN - bounds.getMinX()) + 0.5);
-		int minY = (int) ((MARGIN - bounds.getMinY()) + 0.5);
+		int width = (int) ((2 * args.getMargin() + bounds.getWidth()) + 0.5);
+		int height = (int) ((2 * args.getMargin() + bounds.getHeight()) + 0.5);
+		int minX = (int) ((args.getMargin() - bounds.getMinX()) + 0.5);
+		int minY = (int) ((args.getMargin() - bounds.getMinY()) + 0.5);
 
 		final String viewBox = String.format("%d %d %d %d", -minX, -minY, width, height);
 		document.getRootElement().setAttribute(SVGConstants.SVG_VIEW_BOX_ATTRIBUTE, viewBox);

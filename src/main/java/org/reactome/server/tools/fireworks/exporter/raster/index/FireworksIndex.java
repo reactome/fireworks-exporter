@@ -14,10 +14,10 @@ public class FireworksIndex {
 	private final List<Node> nodes = new LinkedList<>();
 	private final List<Edge> edges = new LinkedList<>();
 
-	public FireworksIndex(FireworksGraph layout, FireworkArgs args, AnalysisStoredResult result) {
-		index(layout);
-		this.decorator = new FireworksDecorator(this, layout, args);
-		this.analysis = new FireworksAnalysis(this, layout, args, result);
+	public FireworksIndex(FireworksGraph graph, FireworkArgs args, AnalysisStoredResult result) {
+		index(graph);
+		this.decorator = new FireworksDecorator(this, graph, args);
+		this.analysis = new FireworksAnalysis(this, graph, args, result);
 	}
 
 	private void index(FireworksGraph layout) {
