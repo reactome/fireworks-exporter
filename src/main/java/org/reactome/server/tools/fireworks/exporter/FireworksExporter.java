@@ -16,7 +16,6 @@ import org.reactome.server.tools.fireworks.exporter.raster.FireworksRenderer;
 import org.w3c.dom.svg.SVGDocument;
 
 import java.awt.image.BufferedImage;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -87,7 +86,7 @@ public class FireworksExporter {
 		}
 	}
 
-	public void render(FireworkArgs args, FileOutputStream os) throws IOException, AnalysisServerError, TranscoderException {
+	public void render(FireworkArgs args, OutputStream os) throws IOException, AnalysisServerError, TranscoderException {
 		render(args, null, os);
 	}
 }
