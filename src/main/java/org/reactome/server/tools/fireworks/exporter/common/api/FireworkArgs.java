@@ -8,7 +8,6 @@ public class FireworkArgs {
 	private final String format;
 	private final String speciesName;
 	private String profile;
-	private Double factor = 1.;
 	private Color background;
 	private Collection<String> selected;
 	private Collection<String> flags;
@@ -16,6 +15,10 @@ public class FireworkArgs {
 	private String resource;
 	private Integer column;
 	private Boolean writeTitle;
+	private Integer quality = 5;
+	private Double factor = scale(quality);
+	private Integer margin = 15;
+
 
 	public FireworkArgs(String speciesName, String format) {
 		this.speciesName = speciesName;
@@ -34,16 +37,13 @@ public class FireworkArgs {
 		return profile;
 	}
 
-	public void setProfile(String profile) {
+	public FireworkArgs setProfile(String profile) {
 		this.profile = profile;
+		return this;
 	}
 
 	public Double getFactor() {
 		return factor;
-	}
-
-	public void setFactor(Double factor) {
-		this.factor = factor;
 	}
 
 	public Color getBackground() {
@@ -76,31 +76,71 @@ public class FireworkArgs {
 		return token;
 	}
 
-	public void setToken(String token) {
+	public FireworkArgs setToken(String token) {
 		this.token = token;
+		return this;
 	}
 
 	public String getResource() {
 		return resource;
 	}
 
-	public void setResource(String resource) {
+	public FireworkArgs setResource(String resource) {
 		this.resource = resource;
+		return this;
 	}
 
 	public Integer getColumn() {
 		return column;
 	}
 
-	public void setColumn(Integer column) {
+	public FireworkArgs setColumn(Integer column) {
 		this.column = column;
-	}
-
-	public void setWriteTitle(Boolean writeTitle) {
-		this.writeTitle = writeTitle;
+		return this;
 	}
 
 	public Boolean getWriteTitle() {
 		return writeTitle;
 	}
+
+	public FireworkArgs setWriteTitle(Boolean writeTitle) {
+		this.writeTitle = writeTitle;
+		return this;
+	}
+
+	public Integer getQuality() {
+		return quality;
+	}
+
+	public FireworkArgs setQuality(Integer quality) {
+		if (quality != null) {
+			this.quality = quality;
+			this.factor = scale(quality);
+		}
+		return this;
+	}
+
+	public Integer getMargin() {
+		return margin;
+	}
+
+	public FireworkArgs setMargin(Integer margin) {
+		if (margin != null)
+			this.margin = Math.max(0, Math.min(20, margin));
+		return this;
+	}
+
+	private double scale(int quality) {
+		if (quality < 1 || quality > 10)
+			throw new IllegalArgumentException("quality must be in the range [1-10]");
+		if (quality < 5) {
+			return interpolate(quality, 1, 5, 0.1, 1);
+		} else return interpolate(quality, 5, 10, 1, 3);
+	}
+
+	private double interpolate(double x, double min, double max, double dest_min, double dest_max) {
+		return (x - min) / (max - min) * (dest_max - dest_min) + dest_min;
+	}
+
+
 }
