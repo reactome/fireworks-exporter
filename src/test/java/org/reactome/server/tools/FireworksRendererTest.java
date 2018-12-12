@@ -29,11 +29,11 @@ import static org.junit.Assert.fail;
  * Unit test for simple FireworksRenderer.
  */
 public class FireworksRendererTest {
-	private static final String TOKEN_OVER_1 = "MjAxODAyMTIxMTI5MzdfMQ==";
-	private static final String TOKEN_OVER_2 = "MjAxODAyMTIxMTMwMTRfMg==";
-	private static final String TOKEN_EXPRESSION_1 = "MjAxODAyMTIxMTMwNDhfMw==";
-	private static final String TOKEN_EXPRESSION_2 = "MjAxODAyMTIxMTMxMTZfNA==";
-	private static final String TOKEN_SPECIES = "MjAxODAyMTIxMTMyMzdfNQ==";
+	private static final String TOKEN_OVER_1 = "MjAxODExMDEwNzI3NDNfOA%253D%253D"; // uniprot (GBM Uniprot)
+	private static final String TOKEN_OVER_2 = "MjAxODExMDEwNzMyMDdfOQ%253D%253D"; // Gene NCBI (12 tumors)
+	private static final String TOKEN_EXPRESSION_1 = "MjAxODExMDEwNzMyMjJfMTA%253D";  // microarray (probeset)
+	private static final String TOKEN_EXPRESSION_2 = "MjAxODEwMzAxMDIzMDBfNQ%253D%253D";  // HPA (GeneName)
+	private static final String TOKEN_SPECIES = "MjAxODExMDEwNzMzMTRfMTE%253D"; // canis
 
 	private static final String ANALYSIS_PATH = "src/test/resources/org/reactome/server/tools/fireworks/exporter/analysis";
 	private static final String FIREWORK_PATH = "src/test/resources/org/reactome/server/tools/fireworks/exporter/layouts";
@@ -82,7 +82,7 @@ public class FireworksRendererTest {
 	public void testFlags() {
 		final FireworkArgs args = new FireworkArgs("Canis_familiaris", "png");
 		args.setFlags(Collections.singletonList("CTP"));
-		args.setFactor(2.);
+		args.setQuality(8);
 		args.setWriteTitle(true);
 		render(args, null);
 	}
@@ -90,7 +90,7 @@ public class FireworksRendererTest {
 	@Test
 	public void testEnrichment() {
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
-		args.setFactor(2.);
+		args.setQuality(8);
 		args.setSelected(Arrays.asList("R-HSA-196783"));
 		args.setToken(TOKEN_OVER_1);
 		render(args, null);
@@ -99,7 +99,7 @@ public class FireworksRendererTest {
 	@Test
 	public void testExpression() {
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
-//		args.setFactor(2.);
+		args.setQuality(8);
 		args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
 		args.setProfile("Calcium Salts");
 		args.setColumn(1);
@@ -169,7 +169,7 @@ public class FireworksRendererTest {
 	@Test
 	public void testToSvgWithAnalysis() {
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "svg");
-		args.setToken("MjAxODAyMTIxMTMwNDhfMw==");
+		args.setToken(TOKEN_OVER_1);
 		args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
 		try {
 			final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens_expression.svg"));
