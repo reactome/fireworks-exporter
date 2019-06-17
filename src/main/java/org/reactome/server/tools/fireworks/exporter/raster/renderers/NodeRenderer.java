@@ -54,7 +54,11 @@ public class NodeRenderer {
 	private Color getNodeColor(Node node) {
 		if (index.getAnalysis().getResult() == null)
 			return profile.getNode().getInitial();
-		if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
+		if (index.getArgs().getCoverage()) {
+			final Double c = index.getAnalysis().getCoverage(node);
+			if (c != null)
+				return ColorFactory.interpolate(profile.getNode().getEnrichment(), c);
+		} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
 			if (node.getExp() != null) {
 				if (node.getpValue() <= FireworksAnalysis.P_VALUE_THRESHOLD) {
 					final double min = index.getAnalysis().getResult().getExpressionSummary().getMin();

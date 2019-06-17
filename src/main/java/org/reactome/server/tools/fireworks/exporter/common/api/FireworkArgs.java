@@ -16,6 +16,7 @@ public class FireworkArgs {
 	private Integer column;
 	private Boolean writeTitle;
 	private Integer quality = 5;
+	private Boolean coverage;
 	private Double factor = scale(quality);
 	private Integer margin = 15;
 
@@ -143,4 +144,11 @@ public class FireworkArgs {
 	}
 
 
+	public Boolean getCoverage() {
+		return coverage == null ? false : coverage;
+	}
+
+	public void setCoverage(Boolean coverage) {
+		this.coverage = coverage;
+	}
 }

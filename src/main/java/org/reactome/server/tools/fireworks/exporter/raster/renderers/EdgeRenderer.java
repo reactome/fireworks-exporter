@@ -61,7 +61,11 @@ public class EdgeRenderer {
 	private Color getEdgeColor(Edge edge) {
 		if (index.getAnalysis().getResult() == null)
 			return profile.getEdge().getInitial();
-		if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
+		if(index.getArgs().getCoverage()) {
+			final Double c = index.getAnalysis().getCoverage(edge.getTo());
+			if (c != null)
+				return ColorFactory.interpolate(profile.getNode().getEnrichment(), c);
+		} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
 			if (edge.getTo().getExp() != null) {
 				if (edge.getpValue() <= FireworksAnalysis.P_VALUE_THRESHOLD) {
 					final double min = index.getAnalysis().getResult().getExpressionSummary().getMin();

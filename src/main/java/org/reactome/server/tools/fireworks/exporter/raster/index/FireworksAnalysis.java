@@ -1,7 +1,11 @@
 package org.reactome.server.tools.fireworks.exporter.raster.index;
 
 import org.reactome.server.analysis.core.model.AnalysisType;
+import org.reactome.server.analysis.core.model.PathwayNodeData;
+import org.reactome.server.analysis.core.model.resource.MainResource;
+import org.reactome.server.analysis.core.model.resource.ResourceFactory;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
+import org.reactome.server.analysis.core.result.PathwayNodeSummary;
 import org.reactome.server.analysis.core.result.model.PathwaySummary;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksNode;
@@ -47,6 +51,7 @@ public class FireworksAnalysis {
 	private FireworksGraph layout;
 	private FireworkArgs args;
 	private Rectangle2D.Double colorBar;
+	private MainResource resource;
 
 	FireworksAnalysis(FireworksIndex index, FireworksGraph layout, FireworkArgs args, AnalysisStoredResult result) {
 		this.index = index;
@@ -68,6 +73,8 @@ public class FireworksAnalysis {
 				? result.getResourceSummary().get(1).getResource()
 				: result.getResourceSummary().get(0).getResource()
 				: args.getResource();
+		this.resource = ResourceFactory.getMainResource(resource);
+
 //		this.pathwaySummary = AnalysisClient.getPathwaysSummary(pathways, args.getToken(), resource);
 		this.pathwaySummary = result.filterByPathways(pathways, resource);
 		if (type == AnalysisType.EXPRESSION) {
@@ -151,7 +158,10 @@ public class FireworksAnalysis {
 
 		final String topText;
 		final String bottomText;
-		if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
+		if (args.getCoverage()) {
+			topText = "0%";
+			bottomText = "100%";
+		} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
 			topText = EXPRESSION_FORMAT.format(result.getExpressionSummary().getMax());
 			bottomText = EXPRESSION_FORMAT.format(result.getExpressionSummary().getMin());
 		} else {
@@ -213,4 +223,21 @@ public class FireworksAnalysis {
 		return arrow;
 	}
 
+	public MainResource getResource() {
+		return resource;
+	}
+
+	public Double getCoverage(Node node) {
+		final PathwayNodeSummary pathway = index.getAnalysis().getResult().getPathway(node.getFireworksNode().getStId());
+		if (pathway == null) return null;
+		final PathwayNodeData data = pathway.getData();
+		final MainResource mr = index.getAnalysis().getResource();
+		double p;
+		if (mr == null) {
+			p = data.getEntitiesFound() / (double) data.getEntitiesCount();
+		} else {
+			p = data.getEntitiesFound(mr) / (double) data.getEntitiesCount(mr);
+		}
+		return p;
+	}
 }

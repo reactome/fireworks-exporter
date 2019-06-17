@@ -11,6 +11,7 @@ public class FireworksIndex {
 	private final Map<Long, Node> index = new TreeMap<>();
 	private final FireworksDecorator decorator;
 	private final FireworksAnalysis analysis;
+	private final FireworkArgs args;
 	private final List<Node> nodes = new LinkedList<>();
 	private final List<Edge> edges = new LinkedList<>();
 
@@ -18,6 +19,7 @@ public class FireworksIndex {
 		index(graph);
 		this.decorator = new FireworksDecorator(this, graph, args);
 		this.analysis = new FireworksAnalysis(this, graph, args, result);
+		this.args = args;
 	}
 
 	private void index(FireworksGraph layout) {
@@ -32,6 +34,10 @@ public class FireworksIndex {
 			final Edge edge = from.addChild(to);
 			edges.add(edge);
 		});
+	}
+
+	public FireworkArgs getArgs() {
+		return args;
 	}
 
 	Node getNode(Long id) {
