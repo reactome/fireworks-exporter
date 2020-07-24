@@ -148,13 +148,21 @@ public class FireworksRenderer {
 	 * @param outputStream where to stream the GIF
 	 */
 	public void renderToGif(OutputStream outputStream) {
-		if (index.getAnalysis().getType() != AnalysisType.EXPRESSION)
-			throw new IllegalArgumentException("Animated GIF only supported for EXPRESSION analysis");
+		if (index.getAnalysis().getType() != AnalysisType.EXPRESSION
+				&& index.getAnalysis().getType() != AnalysisType.GSA_REGULATION
+				&& index.getAnalysis().getType() != AnalysisType.GSA_STATISTICS
+				&& index.getAnalysis().getType() != AnalysisType.GSVA)
+			throw new IllegalArgumentException("Animated GIF only supported for EXPRESSION / GSA analysis.");
 		final AnimatedGifEncoder encoder = new AnimatedGifEncoder();
 		encoder.setDelay(1000);
 		encoder.setRepeat(0);
 		encoder.start(outputStream);
 		for (int i = 0; i < result.getExpressionSummary().getColumnNames().size(); i++) {
+			final NodeRenderer nodeRenderer = new NodeRenderer(profile, index, canvas);
+			int finalI = i;
+			index.getNodes().forEach(node -> nodeRenderer.render(node, finalI));
+			final EdgeRenderer edgeRenderer = new EdgeRenderer(profile, index, canvas);
+			index.getEdges().forEach(edge -> edgeRenderer.render(edge, finalI));
 			setCol(i, title);
 			final BufferedImage image = createImage();
 			final Graphics2D graphics = createGraphics(image);
@@ -205,6 +213,7 @@ public class FireworksRenderer {
 	}
 
 	public SVGDocument renderToSvg() {
+		writeInfoText();
 		final SVGDocument document = (SVGDocument) SVG_IMPL.createDocument(SVGConstants.SVG_NAMESPACE_URI, "svg", null);
 		final SVGGeneratorContext ctx = SVGGeneratorContext.createDefault(document);
 		ctx.setExtensionHandler(new GradientHandler());

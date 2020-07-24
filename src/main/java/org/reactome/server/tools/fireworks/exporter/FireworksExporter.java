@@ -65,7 +65,7 @@ public class FireworksExporter {
 		final FireworksRenderer renderer = new FireworksRenderer(layout, args, getResult(args.getToken(), result));
 		if (args.getFormat().equalsIgnoreCase("gif")
 				&& args.getColumn() == null
-				&& type == AnalysisType.EXPRESSION)
+				&& (type == AnalysisType.EXPRESSION || type == AnalysisType.GSVA || type == AnalysisType.GSA_STATISTICS || type == AnalysisType.GSA_REGULATION))
 			renderer.renderToGif(os);
 		else if (args.getFormat().equalsIgnoreCase("svg"))
 			FireworksOutput.save(renderer.renderToSvg(), os);

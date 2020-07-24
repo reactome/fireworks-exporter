@@ -19,8 +19,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.fail;
 
@@ -34,6 +36,12 @@ public class FireworksRendererTest {
 	private static final String TOKEN_EXPRESSION_2 = "MjAxODEwMzAxMDIzMDBfNQ%253D%253D";  // HPA (GeneName)
 	private static final String TOKEN_SPECIES = "MjAxODExMDEwNzMzMTRfMTE%253D"; // canis
 
+	private static final String TOKEN_TISSUE = "MjAyMDA3MjQyMDM5NTlfMTM%253D"; // tissue with 35 columns
+	private static final String TOKEN_COSMIC = "MjAyMDA3MjQxOTE1NTJfMTI%253D"; // COSMIC
+	private static final String TOKEN_GSA = "MjAyMDA3MTYxMjA5MTNfNw%253D%253D";
+
+	private static final String[] IMAGE_FORMAT = {"jpg", "gif", "png", "svg"};
+	private static List<String> ALL_TOKENS;
 	private static final String ANALYSIS_PATH = "src/test/resources/org/reactome/server/tools/fireworks/exporter/analysis";
 	private static final String FIREWORK_PATH = "src/test/resources/org/reactome/server/tools/fireworks/exporter/layouts";
 	private static final File IMAGE_FOLDER = new File("test-image");
@@ -46,6 +54,9 @@ public class FireworksRendererTest {
 	@BeforeClass
 	public static void beforeClass() {
 		createImageDir();
+		ALL_TOKENS = new ArrayList<>();
+		ALL_TOKENS.addAll(Arrays.asList(TOKEN_TISSUE, TOKEN_COSMIC, TOKEN_GSA));
+
 	}
 
 	private static void createImageDir() {
@@ -185,13 +196,95 @@ public class FireworksRendererTest {
 		try {
 			final OutputStream os = save
 					? new NullOutputStream()
-					: new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapies.pdf"));
+					: new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens.pdf"));
 			exporter.render(args, result, os);
 		} catch (AnalysisServerError | TranscoderException | IOException e) {
 			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
 	}
+
+	@Test
+	public void testDiagramWithGSAAnalysisSVG() {
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "svg");
+		args.setToken(TOKEN_GSA);
+		args.setProfile("Calcium Salts");
+		args.setSelected(Collections.singletonList("R-HSA-8963678"));//"R-HSA-5676590"));//, "R-HSA-3560792"));
+		try {
+			final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens_expression.svg"));
+			exporter.render(args, os);
+		} catch (AnalysisServerError | TranscoderException | IOException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testDiagramWithGSAAnalysisPNG() {
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
+		args.setToken(TOKEN_GSA);
+		args.setProfile("Calcium Salts");
+		args.setSelected(Collections.singletonList("R-HSA-8963678"));//"R-HSA-5676590"));//, "R-HSA-3560792"));
+		try {
+			final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens_expression.png"));
+			exporter.render(args, os);
+		} catch (AnalysisServerError | TranscoderException | IOException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testDiagramWithGSAAnalysisGIF() {
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "gif");
+		args.setToken(TOKEN_TISSUE);
+		args.setProfile("Calcium Salts");
+		args.setWriteTitle(true);
+		args.setQuality(10);
+		//final AnalysisStoredResult result = new TokenUtils(ANALYSIS_PATH).getFromToken(TOKEN_GSA);
+		//args.setSelected(Collections.singletonList("R-HSA-8963678"));//"R-HSA-5676590"));//, "R-HSA-3560792"));
+		try {
+			final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens_tissue2.gif"));
+			exporter.renderGif(args, null, os);
+//			exporter.render(args, os);
+		} catch (AnalysisServerError | IOException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testDiagramWithGSAAnalysisJPG() {
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "jpg");
+		args.setToken(TOKEN_GSA);
+		args.setProfile("Calcium Salts");
+		args.setSelected(Collections.singletonList("R-HSA-8963678"));//"R-HSA-5676590"));//, "R-HSA-3560792"));
+		try {
+			final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens_expression.jpg"));
+			exporter.render(args, os);
+		} catch (AnalysisServerError | TranscoderException | IOException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testFireworksWithAnalysisALL() {
+		for (String format : IMAGE_FORMAT) {
+			for (String token : ALL_TOKENS) {
+				final FireworkArgs args = new FireworkArgs("Homo_sapiens", format);
+				args.setToken(token);
+				try {
+					final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens_" + token + "." + format));
+					exporter.render(args, os);
+				} catch (AnalysisServerError | TranscoderException | IOException e) {
+					e.printStackTrace();
+					Assert.fail(e.getMessage());
+				}
+			}
+		}
+	}
+
 
 	private void renderGif(FireworkArgs args, AnalysisStoredResult result) {
 		try {

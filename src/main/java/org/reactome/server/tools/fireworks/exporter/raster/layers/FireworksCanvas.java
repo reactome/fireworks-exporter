@@ -18,6 +18,7 @@ public class FireworksCanvas {
 	private final ImageLayer logoLayer = new ImageLayer();
 	private final BoundTextLayer infoText = new BoundTextLayer();
 	private final BoundTextLayer legendLabels = new BoundTextLayer();
+	private final TextLayer legendBarLabels = new TextLayer();
 	private final FillLayer tickArrows = new FillLayer();
 	private final DrawLayer ticks = new DrawLayer();
 
@@ -32,6 +33,7 @@ public class FireworksCanvas {
 
 			legendBackground,
 			legendBar,
+			legendBarLabels,
 			legendLabels,
 			ticks,
 			tickArrows,
@@ -121,5 +123,9 @@ public class FireworksCanvas {
 
 	public DrawLayer getTicks() {
 		return ticks;
+	}
+
+	public TextLayer getLegendBarLabels() {
+		return legendBarLabels;
 	}
 }

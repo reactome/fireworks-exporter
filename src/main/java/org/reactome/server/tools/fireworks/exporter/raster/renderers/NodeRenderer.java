@@ -34,36 +34,43 @@ public class NodeRenderer {
 	/**
 	 * renders node into canvas
 	 */
-	public void render(Node node) {
+	public void render(Node node, int t) {
 		final double diameter = (node.getFireworksNode().getRatio() + MIN_NODE_SIZE) * NODE_FACTOR;
 		final double x = node.getFireworksNode().getX() - diameter * 0.5;
 		final double y = node.getFireworksNode().getY() - diameter * 0.5;
 		final Shape ellipse = new Ellipse2D.Double(x, y, diameter, diameter);
 
-		draw(node, ellipse);
+		draw(node, ellipse, t);
 		if (node.isSelected()) selection(ellipse);
 		if (node.isFlag()) flag(ellipse);
 		text(node);
 	}
 
-	private void draw(Node node, Shape ellipse) {
-		final Color color = getNodeColor(node);
+	public void render(Node node) {
+		render(node, 0);
+	}
+
+	private void draw(Node node, Shape ellipse, int t) {
+		final Color color = getNodeColor(node, t);
 		canvas.getNodes().add(ellipse, color);
 	}
 
-	private Color getNodeColor(Node node) {
+	private Color getNodeColor(Node node, int t) {
 		if (index.getAnalysis().getResult() == null)
 			return profile.getNode().getInitial();
 		if (index.getArgs().getCoverage()) {
 			final Double c = index.getAnalysis().getCoverage(node);
 			if (c != null)
 				return ColorFactory.interpolate(profile.getNode().getEnrichment(), c);
-		} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
+		} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION
+				|| index.getAnalysis().getType() == AnalysisType.GSA_STATISTICS
+				|| index.getAnalysis().getType() == AnalysisType.GSVA
+				|| index.getAnalysis().getType() == AnalysisType.GSA_REGULATION) {
 			if (node.getExp() != null) {
 				if (node.getpValue() <= FireworksAnalysis.P_VALUE_THRESHOLD) {
 					final double min = index.getAnalysis().getResult().getExpressionSummary().getMin();
 					final double max = index.getAnalysis().getResult().getExpressionSummary().getMax();
-					final double val = 1 - (node.getExp().get(0) - min) / (max - min);
+					final double val = 1 - (node.getExp().get(t) - min) / (max - min);
 					return ColorFactory.interpolate(profile.getNode().getExpression(), val);
 				}
 				return profile.getNode().getHit();

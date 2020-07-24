@@ -61,7 +61,7 @@ public class LogoRenderer {
 		null                -> Homo sapiens
 		OVERREPRESENTATION  -> Homo sapiens (Gene names from liver)
 		SPECIES_COMPARISON  -> Homo sapiens (Canis familiaris)
-		EXPRESSION          -> Homo sapiens (Probeset) 1/5 10h_control
+		EXPRESSION / GSA        -> Homo sapiens (Probeset) 1/5 10h_control
 		 */
 		final StringBuilder text = new StringBuilder();
 		if (title != null) text.append(title);
@@ -70,7 +70,10 @@ public class LogoRenderer {
 			text.append(" (").append(analysis.getResult().getSummary().getSampleName()).append(")");
 		else if (analysis.getType() == AnalysisType.SPECIES_COMPARISON)
 			text.append(" (").append(analysis.getResult().getSummary().getSpecies()).append(")");
-		else if (analysis.getType() == AnalysisType.EXPRESSION)
+		else if (analysis.getType() == AnalysisType.EXPRESSION
+		        || analysis.getType() == AnalysisType.GSA_STATISTICS
+				|| analysis.getType() == AnalysisType.GSVA
+				|| analysis.getType() == AnalysisType.GSA_REGULATION)
 			text.append(" (").append(analysis.getResult().getSummary().getSampleName()).append(")")
 					.append(" ").append(col + 1).append("/")
 					.append(analysis.getResult().getExpressionSummary().getColumnNames().size())

@@ -20,7 +20,7 @@ public class ColorFactory {
 	// colors parsed
 	private static final Map<String, Color> cache = new HashMap<>();
 
-	static Color parseColor(String color) {
+	public static Color parseColor(String color) {
 		if (color == null || color.trim().isEmpty()) return null;
 		return cache.computeIfAbsent(color, ColorFactory::strToColor);
 	}
@@ -59,7 +59,7 @@ public class ColorFactory {
 			return interpolate(gradient.getStop(), gradient.getMax(), (scale - 0.5) * 2);
 	}
 
-	private static Color interpolate(Color a, Color b, double t) {
+	public static Color interpolate(Color a, Color b, double t) {
 		if (t <= 0.0) return a;
 		if (t >= 1.0) return b;
 		float scale = (float) t;

@@ -13,6 +13,7 @@ import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
 import org.reactome.server.tools.fireworks.exporter.common.profiles.FireworksColorProfile;
 import org.reactome.server.tools.fireworks.exporter.common.profiles.GradientColorProfile;
 import org.reactome.server.tools.fireworks.exporter.raster.layers.FireworksCanvas;
+import org.reactome.server.tools.fireworks.exporter.raster.layers.RegulationBar;
 import org.reactome.server.tools.fireworks.exporter.raster.properties.FontProperties;
 
 import java.awt.*;
@@ -52,6 +53,7 @@ public class FireworksAnalysis {
 	private FireworkArgs args;
 	private Rectangle2D.Double colorBar;
 	private MainResource resource;
+	private RegulationBar regulationBars;
 
 	FireworksAnalysis(FireworksIndex index, FireworksGraph layout, FireworkArgs args, AnalysisStoredResult result) {
 		this.index = index;
@@ -80,8 +82,13 @@ public class FireworksAnalysis {
 		if (type == AnalysisType.EXPRESSION) {
 			expression();
 		} else if (type == AnalysisType.OVERREPRESENTATION
-				|| type == AnalysisType.SPECIES_COMPARISON)
+				|| type == AnalysisType.SPECIES_COMPARISON) {
 			enrichment();
+		} else if (type == AnalysisType.GSA_REGULATION
+				|| type == AnalysisType.GSA_STATISTICS
+				|| type == AnalysisType.GSVA) {
+			gsa();
+		}
 	}
 
 	private void enrichment() {
@@ -101,6 +108,10 @@ public class FireworksAnalysis {
 		}
 	}
 
+	private void gsa() {
+		expression();
+	}
+
 	public void addLegend(FireworksCanvas canvas, FireworksColorProfile profile) {
 		final Rectangle2D bounds = canvas.getBounds();
 		addBackground(canvas, bounds);
@@ -109,31 +120,47 @@ public class FireworksAnalysis {
 	}
 
 	private void addGradient(FireworksCanvas canvas, Rectangle2D bounds, FireworksColorProfile profile) {
-		GradientColorProfile gradient = index.getAnalysis().getType() == AnalysisType.EXPRESSION
+		GradientColorProfile gradient = (index.getAnalysis().getType() == AnalysisType.EXPRESSION
+									  || index.getAnalysis().getType() == AnalysisType.GSA_REGULATION
+									  || index.getAnalysis().getType() == AnalysisType.GSA_STATISTICS
+									  || index.getAnalysis().getType() == AnalysisType.GSVA)
 				? profile.getNode().getExpression()
 				: profile.getNode().getEnrichment();
 
-		final Paint paint;
 		double colorBarHeight = LEGEND_HEIGHT - 2 * (BG_PADDING + TEXT_PADDING + FontProperties.DEFAULT_FONT.getSize());
 		colorBar = new Rectangle2D.Double(
 				bounds.getMaxX() + LEGEND_TO_DIAGRAM_SPACE + BG_PADDING,
 				bounds.getCenterY() - 0.5 * colorBarHeight,
 				LEGEND_WIDTH - 2 * BG_PADDING,
 				colorBarHeight);
-		if (gradient.getStop() == null)
-			paint = new GradientPaint(
-					(float) colorBar.getX(), (float) colorBar.getMaxY(), gradient.getMax(),
-					(float) colorBar.getX(), (float) colorBar.getY(), gradient.getMin());
-		else {
-			paint = new LinearGradientPaint(
-					(float) colorBar.getX(), (float) colorBar.getMaxY(),
-					(float) colorBar.getX(), (float) colorBar.getY(),
-					new float[]{0, 0.5f, 1},
-					new Color[]{gradient.getMax(),
-							gradient.getStop(),
-							gradient.getMin()});
+
+		if (index.getAnalysis().getType() == AnalysisType.GSA_REGULATION
+				|| index.getAnalysis().getType() == AnalysisType.GSA_STATISTICS
+				|| index.getAnalysis().getType() == AnalysisType.GSVA) {
+
+			regulationBars = new RegulationBar(gradient, colorBar.getX(), colorBar.getY(), colorBar.getWidth(), colorBar.getHeight());
+			regulationBars.getShapes().forEach((k,v) -> {
+				canvas.getLegendBar().add(v, regulationBars.getColorMap().get(k));
+			});
+			canvas.getLegendBarLabels().add(regulationBars.getSymbols());
+
+		} else {
+			final Paint paint;
+			if (gradient.getStop() == null)
+				paint = new GradientPaint(
+						(float) colorBar.getX(), (float) colorBar.getMaxY(), gradient.getMax(),
+						(float) colorBar.getX(), (float) colorBar.getY(), gradient.getMin());
+			else {
+				paint = new LinearGradientPaint(
+						(float) colorBar.getX(), (float) colorBar.getMaxY(),
+						(float) colorBar.getX(), (float) colorBar.getY(),
+						new float[]{0, 0.5f, 1},
+						new Color[]{gradient.getMax(),
+								gradient.getStop(),
+								gradient.getMin()});
+			}
+			canvas.getLegendBar().add(colorBar, paint);
 		}
-		canvas.getLegendBar().add(colorBar, paint);
 	}
 
 	private void addBackground(FireworksCanvas canvas, Rectangle2D bounds) {
@@ -164,6 +191,11 @@ public class FireworksAnalysis {
 		} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
 			topText = EXPRESSION_FORMAT.format(result.getExpressionSummary().getMax());
 			bottomText = EXPRESSION_FORMAT.format(result.getExpressionSummary().getMin());
+		} else if (index.getAnalysis().getType() == AnalysisType.GSVA
+					|| index.getAnalysis().getType() == AnalysisType.GSA_REGULATION
+		    		|| index.getAnalysis().getType() == AnalysisType.GSA_STATISTICS) {
+			topText = "Up-regulated";
+			bottomText = "Down-regulated";
 		} else {
 			topText = ENRICHMENT_FORMAT.format(0);
 			bottomText = ENRICHMENT_FORMAT.format(P_VALUE_THRESHOLD);
@@ -186,31 +218,46 @@ public class FireworksAnalysis {
 	}
 
 	private void ticks(FireworksCanvas canvas, FireworksColorProfile profile, int col) {
-		if (index.getDecorator().getSelected() == null
-				|| index.getDecorator().getSelected().isEmpty()) return;
+		if (index.getDecorator().getSelected() == null || index.getDecorator().getSelected().isEmpty()) return;
+
 		canvas.getTickArrows().clear();
 		canvas.getTicks().clear();
+
 		for (Long id : index.getDecorator().getSelected()) {
 			final Node node = index.getNode(id);
 			final double val;
-			if (type == AnalysisType.EXPRESSION) {
-				if (node.getExp() == null)
-					continue;
+			if (type == AnalysisType.EXPRESSION
+				|| type == AnalysisType.GSVA
+				|| type == AnalysisType.GSA_STATISTICS
+				|| type == AnalysisType.GSA_REGULATION) {
+
+				if (node.getExp() == null) continue;
 				final double value = node.getExp().get(col);
 				val = 1 - (value - result.getExpressionSummary().getMin()) /
 						(result.getExpressionSummary().getMax() - result.getExpressionSummary().getMin());
 			} else {
-				if (node.getpValue() == null)
-					continue;
+				if (node.getpValue() == null) continue;
 				double value = node.getpValue();
 				val = value / P_VALUE_THRESHOLD;
 			}
-			final double y = colorBar.getY() + val * colorBar.getHeight();
-			final Shape line = new Line2D.Double(colorBar.getX(), y, colorBar.getMaxX(), y);
-			canvas.getTicks().add(line, profile.getNode().getSelection(), TICK_STROKE);
-			// Notice the -1. It puts the arrow over the line
-			final Shape arrow = arrow(colorBar.getMaxX() - 1, y);
-			canvas.getTickArrows().add(arrow, profile.getNode().getSelection());
+
+			if (index.getAnalysis().getType() == AnalysisType.GSA_REGULATION) {
+				if (node.getExp() == null) continue;
+				Shape box = regulationBars.getShapes().get(node.getExp().get(col).intValue());
+				final Shape line = new Line2D.Double(colorBar.getX(), box.getBounds2D().getCenterY(), colorBar.getMaxX(), box.getBounds2D().getCenterY());
+				// Notice the -1. It puts the arrow over the line
+				final Shape arrow = arrow(colorBar.getMaxX() - 1, box.getBounds2D().getCenterY());
+				canvas.getTicks().add(line, profile.getNode().getSelection(), TICK_STROKE);
+				canvas.getTickArrows().add(arrow, profile.getNode().getSelection());
+
+			} else {
+				final double y = colorBar.getY() + val * colorBar.getHeight();
+				final Shape line = new Line2D.Double(colorBar.getX(), y, colorBar.getMaxX(), y);
+				canvas.getTicks().add(line, profile.getNode().getSelection(), TICK_STROKE);
+				// Notice the -1. It puts the arrow over the line
+				final Shape arrow = arrow(colorBar.getMaxX() - 1, y);
+				canvas.getTickArrows().add(arrow, profile.getNode().getSelection());
+			}
 		}
 	}
 

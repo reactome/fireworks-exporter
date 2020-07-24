@@ -1,5 +1,6 @@
 package org.reactome.server.tools.fireworks.exporter.raster.layers;
 
+import org.reactome.server.tools.diagram.data.layout.Coordinate;
 import org.reactome.server.tools.fireworks.exporter.raster.properties.FontProperties;
 
 import java.awt.*;
@@ -59,8 +60,17 @@ public class TextLayer extends CommonLayer {
 		objects.add(new RenderableText(text, center, color));
 	}
 
-	private class RenderableText {
+	public void add(String text, Color color, Coordinate position) {
+		objects.add(new RenderableText(text, position, color));
+	}
 
+	public void add(TextLayer textLayer) {
+		if (textLayer.objects.size() > 0) {
+			objects.addAll(textLayer.objects);
+		}
+	}
+
+	private class RenderableText {
 		private final String text;
 		private final Point2D.Double nodePosition;
 		private final Color color;
@@ -69,6 +79,10 @@ public class TextLayer extends CommonLayer {
 			this.text = text;
 			this.nodePosition = nodePosition;
 			this.color = color;
+		}
+
+		RenderableText(String text, Coordinate position, Color color) {
+			this(text, new Point2D.Double(position.getX(), position.getY()), color);
 		}
 	}
 

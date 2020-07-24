@@ -35,7 +35,7 @@ public class EdgeRenderer {
 	/**
 	 * Renders edge into canvas.
 	 */
-	public void render(Edge edge) {
+	public void render(Edge edge, int t) {
 		final Path2D path = new Path2D.Double();
 		path.moveTo(edge.getFrom().getFireworksNode().getX(), edge.getFrom().getFireworksNode().getY());
 
@@ -48,29 +48,36 @@ public class EdgeRenderer {
 
 		path.quadTo(x, y, edge.getTo().getFireworksNode().getX(), edge.getTo().getFireworksNode().getY());
 
-		draw(edge, path);
+		draw(edge, path, t);
 		if (edge.isSelected()) selection(path);
 		if (edge.isFlag()) flag(path);
 	}
 
-	private void draw(Edge edge, Path2D path) {
-		final Color color = getEdgeColor(edge);
+	public void render(Edge edge) {
+		render(edge, 0);
+	}
+
+	private void draw(Edge edge, Path2D path, int t) {
+		final Color color = getEdgeColor(edge, t);
 		canvas.getEdges().add(path, color, DEFAULT_STROKE);
 	}
 
-	private Color getEdgeColor(Edge edge) {
+	private Color getEdgeColor(Edge edge, int t) {
 		if (index.getAnalysis().getResult() == null)
 			return profile.getEdge().getInitial();
 		if(index.getArgs().getCoverage()) {
 			final Double c = index.getAnalysis().getCoverage(edge.getTo());
 			if (c != null)
 				return ColorFactory.interpolate(profile.getNode().getEnrichment(), c);
-		} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
+		} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION
+				|| index.getAnalysis().getType() == AnalysisType.GSA_STATISTICS
+				|| index.getAnalysis().getType() == AnalysisType.GSVA
+				|| index.getAnalysis().getType() == AnalysisType.GSA_REGULATION) {
 			if (edge.getTo().getExp() != null) {
 				if (edge.getpValue() <= FireworksAnalysis.P_VALUE_THRESHOLD) {
 					final double min = index.getAnalysis().getResult().getExpressionSummary().getMin();
 					final double max = index.getAnalysis().getResult().getExpressionSummary().getMax();
-					final double val = 1 - (edge.getTo().getExp().get(0) - min) / (max - min);
+					final double val = 1 - (edge.getTo().getExp().get(t) - min) / (max - min);
 					return ColorFactory.interpolate(profile.getEdge().getExpression(), val);
 				} else return profile.getEdge().getHit();
 			}
