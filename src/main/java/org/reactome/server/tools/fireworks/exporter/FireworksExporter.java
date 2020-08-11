@@ -58,11 +58,9 @@ public class FireworksExporter {
 	}
 
 	public void render(FireworkArgs args, AnalysisStoredResult result, OutputStream os) throws AnalysisServerError, TranscoderException, IOException {
-		final AnalysisType type = result == null
-				? null
-				: AnalysisType.valueOf(result.getSummary().getType());
 		final FireworksGraph layout = ResourcesFactory.getGraph(fireworkPath, args.getSpeciesName());
 		final FireworksRenderer renderer = new FireworksRenderer(layout, args, getResult(args.getToken(), result));
+		final AnalysisType type = renderer.getResult() == null ? null : AnalysisType.valueOf(renderer.getResult().getSummary().getType());
 		if (args.getFormat().equalsIgnoreCase("gif")
 				&& args.getColumn() == null
 				&& (type == AnalysisType.EXPRESSION || type == AnalysisType.GSVA || type == AnalysisType.GSA_STATISTICS || type == AnalysisType.GSA_REGULATION))

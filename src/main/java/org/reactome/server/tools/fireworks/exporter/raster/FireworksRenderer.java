@@ -254,4 +254,8 @@ public class FireworksRenderer {
 		document.close();
 		return new Document(new PdfDocument(new PdfReader(new ByteArrayInputStream(os.toByteArray()))));
 	}
+
+	public AnalysisStoredResult getResult() {
+		return result;
+	}
 }

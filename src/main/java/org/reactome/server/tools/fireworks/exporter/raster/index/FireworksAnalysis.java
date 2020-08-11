@@ -243,6 +243,9 @@ public class FireworksAnalysis {
 
 			if (index.getAnalysis().getType() == AnalysisType.GSA_REGULATION) {
 				if (node.getExp() == null) continue;
+				if (node.getpValue() > P_VALUE_THRESHOLD) continue;
+
+				// draw tick
 				Shape box = regulationBars.getShapes().get(node.getExp().get(col).intValue());
 				final Shape line = new Line2D.Double(colorBar.getX(), box.getBounds2D().getCenterY(), colorBar.getMaxX(), box.getBounds2D().getCenterY());
 				// Notice the -1. It puts the arrow over the line
@@ -251,6 +254,8 @@ public class FireworksAnalysis {
 				canvas.getTickArrows().add(arrow, profile.getNode().getSelection());
 
 			} else {
+				if (node.getExp() == null) continue;
+				if (node.getpValue() > P_VALUE_THRESHOLD) continue;
 				final double y = colorBar.getY() + val * colorBar.getHeight();
 				final Shape line = new Line2D.Double(colorBar.getX(), y, colorBar.getMaxX(), y);
 				canvas.getTicks().add(line, profile.getNode().getSelection(), TICK_STROKE);
