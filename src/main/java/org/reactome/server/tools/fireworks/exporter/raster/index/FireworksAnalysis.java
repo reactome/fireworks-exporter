@@ -7,6 +7,7 @@ import org.reactome.server.analysis.core.model.resource.ResourceFactory;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
 import org.reactome.server.analysis.core.result.PathwayNodeSummary;
 import org.reactome.server.analysis.core.result.model.PathwaySummary;
+import org.reactome.server.analysis.core.result.model.SpeciesFilteredResult;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksGraph;
 import org.reactome.server.tools.diagram.data.fireworks.graph.FireworksNode;
 import org.reactome.server.tools.fireworks.exporter.common.api.FireworkArgs;
@@ -189,8 +190,9 @@ public class FireworksAnalysis {
 			topText = "0%";
 			bottomText = "100%";
 		} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
-			topText = EXPRESSION_FORMAT.format(result.getExpressionSummary().getMax());
-			bottomText = EXPRESSION_FORMAT.format(result.getExpressionSummary().getMin());
+			SpeciesFilteredResult sfr = result.filterBySpecies(layout.getSpeciesId(), args.getResource());
+			topText = EXPRESSION_FORMAT.format(sfr.getExpressionSummary().getMax());
+			bottomText = EXPRESSION_FORMAT.format(sfr.getExpressionSummary().getMin());
 		} else if (index.getAnalysis().getType() == AnalysisType.GSVA
 					|| index.getAnalysis().getType() == AnalysisType.GSA_REGULATION
 		    		|| index.getAnalysis().getType() == AnalysisType.GSA_STATISTICS) {
