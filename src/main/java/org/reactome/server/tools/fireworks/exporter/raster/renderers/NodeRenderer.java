@@ -18,7 +18,7 @@ import java.awt.geom.Point2D;
 public class NodeRenderer {
 
 	private static final double MIN_NODE_SIZE = 0.025;
-	private static final int NODE_FACTOR = 75; // default 18
+	private static final int NODE_FACTOR = 18; // default 18
 	private static final Stroke SELECTION_STROKE = new BasicStroke(1);
 	private static final Stroke FLAG_STROKE = new BasicStroke(2);
 	private final FireworksColorProfile profile;

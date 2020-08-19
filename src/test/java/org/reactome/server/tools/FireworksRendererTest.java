@@ -81,7 +81,7 @@ public class FireworksRendererTest {
 
 	@Test
 	public void testSimple() {
-		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "png");
+		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "jpg");
 		args.setSelected(Arrays.asList("R-HSA-169911", "R-HSA-3560792"));
 		render(args, null, "Homo_sapiens");
 	}
@@ -272,6 +272,19 @@ public class FireworksRendererTest {
 		args.setSelected(Collections.singletonList("R-HSA-380612"));
 		try {
 			final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens_TISSUE.svg"));
+			exporter.render(args, os);
+		} catch (AnalysisServerError | TranscoderException | IOException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testOtherSpecies() {
+		final FireworkArgs args = new FireworkArgs("Mycobacterium_tuberculosis", "svg");
+		args.setWriteTitle(true);
+		try {
+			final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Mycobacterium_tuberculosis.svg"));
 			exporter.render(args, os);
 		} catch (AnalysisServerError | TranscoderException | IOException e) {
 			e.printStackTrace();

@@ -190,7 +190,8 @@ public class FireworksAnalysis {
 			topText = "0%";
 			bottomText = "100%";
 		} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
-			SpeciesFilteredResult sfr = result.filterBySpecies(layout.getSpeciesId(), args.getResource());
+			String resource = args.getResource() == null ? "TOTAL" : args.getResource();
+			SpeciesFilteredResult sfr = result.filterBySpecies(layout.getSpeciesId(), resource);
 			topText = EXPRESSION_FORMAT.format(sfr.getExpressionSummary().getMax());
 			bottomText = EXPRESSION_FORMAT.format(sfr.getExpressionSummary().getMin());
 		} else if (index.getAnalysis().getType() == AnalysisType.GSVA

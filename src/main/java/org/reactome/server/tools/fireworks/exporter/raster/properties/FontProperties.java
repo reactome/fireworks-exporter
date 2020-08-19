@@ -24,7 +24,7 @@ public class FontProperties {
 			// resources shouldn't throw exceptions
 			logger.error("Couldn't load font", e);
 		}
-		DEFAULT_FONT = new Font("arial", Font.BOLD, 15);
+		DEFAULT_FONT = new Font("arial", Font.BOLD, 8);
 	}
 
 }
