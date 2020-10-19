@@ -55,6 +55,7 @@ public class FireworksAnalysis {
 	private Rectangle2D.Double colorBar;
 	private MainResource resource;
 	private RegulationBar regulationBars;
+	private SpeciesFilteredResult sfr;
 
 	FireworksAnalysis(FireworksIndex index, FireworksGraph layout, FireworkArgs args, AnalysisStoredResult result) {
 		this.index = index;
@@ -135,10 +136,7 @@ public class FireworksAnalysis {
 				LEGEND_WIDTH - 2 * BG_PADDING,
 				colorBarHeight);
 
-		if (index.getAnalysis().getType() == AnalysisType.GSA_REGULATION
-				|| index.getAnalysis().getType() == AnalysisType.GSA_STATISTICS
-				|| index.getAnalysis().getType() == AnalysisType.GSVA) {
-
+		if (index.getAnalysis().getType() == AnalysisType.GSA_REGULATION) {
 			regulationBars = new RegulationBar(gradient, colorBar.getX(), colorBar.getY(), colorBar.getWidth(), colorBar.getHeight());
 			regulationBars.getShapes().forEach((k,v) -> {
 				canvas.getLegendBar().add(v, regulationBars.getColorMap().get(k));
@@ -189,13 +187,13 @@ public class FireworksAnalysis {
 		if (args.getCoverage()) {
 			topText = "0%";
 			bottomText = "100%";
-		} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION) {
+		} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION || index.getAnalysis().getType() == AnalysisType.GSVA) {
 			String resource = args.getResource() == null ? "TOTAL" : args.getResource();
-			SpeciesFilteredResult sfr = result.filterBySpecies(layout.getSpeciesId(), resource);
+			SpeciesFilteredResult sfr = getSpeciesResultFiltered();
 			topText = EXPRESSION_FORMAT.format(sfr.getExpressionSummary().getMax());
 			bottomText = EXPRESSION_FORMAT.format(sfr.getExpressionSummary().getMin());
-		} else if (index.getAnalysis().getType() == AnalysisType.GSVA
-					|| index.getAnalysis().getType() == AnalysisType.GSA_REGULATION
+		} else if ( //index.getAnalysis().getType() == AnalysisType.GSVA ||
+					index.getAnalysis().getType() == AnalysisType.GSA_REGULATION
 		    		|| index.getAnalysis().getType() == AnalysisType.GSA_STATISTICS) {
 			topText = "Up-regulated";
 			bottomText = "Down-regulated";
@@ -229,15 +227,16 @@ public class FireworksAnalysis {
 		for (Long id : index.getDecorator().getSelected()) {
 			final Node node = index.getNode(id);
 			final double val;
-			if (type == AnalysisType.EXPRESSION
-				|| type == AnalysisType.GSVA
-				|| type == AnalysisType.GSA_STATISTICS
-				|| type == AnalysisType.GSA_REGULATION) {
+			if (index.getAnalysis().getType() == AnalysisType.EXPRESSION
+				|| index.getAnalysis().getType() == AnalysisType.GSVA
+				|| index.getAnalysis().getType() == AnalysisType.GSA_STATISTICS) {
 
 				if (node.getExp() == null) continue;
+
 				final double value = node.getExp().get(col);
-				val = 1 - (value - result.getExpressionSummary().getMin()) /
-						(result.getExpressionSummary().getMax() - result.getExpressionSummary().getMin());
+				final double min = getSpeciesResultFiltered().getExpressionSummary().getMin();
+				final double max = getSpeciesResultFiltered().getExpressionSummary().getMax();
+				val = 1 - (value - min) / (max - min);
 			} else {
 				if (node.getpValue() == null) continue;
 				double value = node.getpValue();
@@ -294,5 +293,16 @@ public class FireworksAnalysis {
 			p = data.getEntitiesFound(mr) / (double) data.getEntitiesCount(mr);
 		}
 		return p;
+	}
+
+	public SpeciesFilteredResult getSpeciesResultFiltered(){
+		if (this.sfr == null) {
+			String resourceName = resource == null ? "TOTAL" : resource.getName();
+			this.sfr = result.filterBySpecies(this.layout.getSpeciesId(), resourceName);
+		}
+		return sfr;
+	}
+	public FireworksGraph getLayout() {
+		return layout;
 	}
 }

@@ -7,6 +7,7 @@ import org.reactome.server.tools.fireworks.exporter.raster.index.Edge;
 import org.reactome.server.tools.fireworks.exporter.raster.index.FireworksAnalysis;
 import org.reactome.server.tools.fireworks.exporter.raster.index.FireworksIndex;
 import org.reactome.server.tools.fireworks.exporter.raster.layers.FireworksCanvas;
+import org.reactome.server.tools.fireworks.exporter.raster.layers.RegulationSheet;
 
 import java.awt.*;
 import java.awt.geom.Path2D;
@@ -71,15 +72,24 @@ public class EdgeRenderer {
 				return ColorFactory.interpolate(profile.getNode().getEnrichment(), c);
 		} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION
 				|| index.getAnalysis().getType() == AnalysisType.GSA_STATISTICS
-				|| index.getAnalysis().getType() == AnalysisType.GSVA
-				|| index.getAnalysis().getType() == AnalysisType.GSA_REGULATION) {
+				|| index.getAnalysis().getType() == AnalysisType.GSVA) {
 			if (edge.getTo().getExp() != null) {
 				if (edge.getpValue() <= FireworksAnalysis.P_VALUE_THRESHOLD) {
-					final double min = index.getAnalysis().getResult().getExpressionSummary().getMin();
-					final double max = index.getAnalysis().getResult().getExpressionSummary().getMax();
+					final double min = index.getAnalysis().getSpeciesResultFiltered().getExpressionSummary().getMin();
+					final double max = index.getAnalysis().getSpeciesResultFiltered().getExpressionSummary().getMax();
 					final double val = 1 - (edge.getTo().getExp().get(t) - min) / (max - min);
-					return ColorFactory.interpolate(profile.getEdge().getExpression(), val);
-				} else return profile.getEdge().getHit();
+					return ColorFactory.interpolate(profile.getNode().getExpression(), val);
+				}
+				return profile.getNode().getHit();
+			}
+		} else if (index.getAnalysis().getType() == AnalysisType.GSA_REGULATION) {
+			if (edge.getTo().getExp() != null) {
+				if (edge.getpValue() <= FireworksAnalysis.P_VALUE_THRESHOLD) {
+					RegulationSheet sheet = new RegulationSheet(profile.getEdge().getExpression());
+					return sheet.getColorMap().get(edge.getTo().getExp().get(t).intValue());
+				} else {
+					return profile.getEdge().getHit();
+				}
 			}
 		} else if (index.getAnalysis().getType() == AnalysisType.OVERREPRESENTATION
 				|| index.getAnalysis().getType() == AnalysisType.SPECIES_COMPARISON) {

@@ -38,6 +38,7 @@ public class FireworksRendererTest {
 	private static final String TOKEN_TISSUE = "MjAyMDA3MjQyMDM5NTlfMTM%253D"; // tissue with 35 columns
 	private static final String TOKEN_COSMIC = "MjAyMDA3MjQxOTE1NTJfMTI%253D"; // COSMIC
 	private static final String TOKEN_GSA = "MjAyMDA3MTYxMjA5MTNfNw%253D%253D";
+	private static final String TOKEN_GSVA = "MjAyMDA5MjQwNTAzMzBfMzM%253D";
 
 	private static final String[] IMAGE_FORMAT = {"jpg", "gif", "png", "svg"};
 	private static List<String> ALL_TOKENS;
@@ -54,7 +55,7 @@ public class FireworksRendererTest {
 	public static void beforeClass() {
 		createImageDir();
 		ALL_TOKENS = new ArrayList<>();
-		ALL_TOKENS.addAll(Arrays.asList(TOKEN_TISSUE, TOKEN_COSMIC, TOKEN_GSA));
+		ALL_TOKENS.addAll(Arrays.asList(TOKEN_OVER_1, TOKEN_EXPRESSION_1, TOKEN_EXPRESSION_2, TOKEN_SPECIES, TOKEN_TISSUE, TOKEN_COSMIC, TOKEN_GSA, TOKEN_GSVA));
 
 	}
 
@@ -217,11 +218,12 @@ public class FireworksRendererTest {
 	@Test
 	public void testGSAAnalysisSVG() {
 		final FireworkArgs args = new FireworkArgs("Homo_sapiens", "svg");
-		args.setToken(TOKEN_GSA);
-		args.setProfile("Calcium Salts");
-		args.setSelected(Collections.singletonList("R-HSA-380612"));
+		args.setToken(TOKEN_GSVA);
+		args.setResource("TOTAL");
+		args.setProfile("Barium Lithium");
+		args.setSelected(Collections.singletonList("R-HSA-983189"));
 		try {
-			final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens_GSA.svg"));
+			final FileOutputStream os = new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens_GSVA.svg"));
 			exporter.render(args, os);
 		} catch (AnalysisServerError | TranscoderException | IOException e) {
 			e.printStackTrace();

@@ -7,6 +7,7 @@ import org.reactome.server.tools.fireworks.exporter.raster.index.FireworksAnalys
 import org.reactome.server.tools.fireworks.exporter.raster.index.FireworksIndex;
 import org.reactome.server.tools.fireworks.exporter.raster.index.Node;
 import org.reactome.server.tools.fireworks.exporter.raster.layers.FireworksCanvas;
+import org.reactome.server.tools.fireworks.exporter.raster.layers.RegulationSheet;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -64,16 +65,25 @@ public class NodeRenderer {
 				return ColorFactory.interpolate(profile.getNode().getEnrichment(), c);
 		} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION
 				|| index.getAnalysis().getType() == AnalysisType.GSA_STATISTICS
-				|| index.getAnalysis().getType() == AnalysisType.GSVA
-				|| index.getAnalysis().getType() == AnalysisType.GSA_REGULATION) {
+				|| index.getAnalysis().getType() == AnalysisType.GSVA) {
 			if (node.getExp() != null) {
 				if (node.getpValue() <= FireworksAnalysis.P_VALUE_THRESHOLD) {
-					final double min = index.getAnalysis().getResult().getExpressionSummary().getMin();
-					final double max = index.getAnalysis().getResult().getExpressionSummary().getMax();
-					final double val = 1 - (node.getExp().get(t) - min) / (max - min);
+					final double min = index.getAnalysis().getSpeciesResultFiltered().getExpressionSummary().getMin();
+					final double max = index.getAnalysis().getSpeciesResultFiltered().getExpressionSummary().getMax();
+					final double gui = node.getExp().get(t);
+					final double val = 1 - (gui - min) / (max - min);
 					return ColorFactory.interpolate(profile.getNode().getExpression(), val);
 				}
 				return profile.getNode().getHit();
+			}
+		} else if (index.getAnalysis().getType() == AnalysisType.GSA_REGULATION) {
+			if (node.getExp() != null) {
+				if (node.getpValue() <= FireworksAnalysis.P_VALUE_THRESHOLD) {
+					RegulationSheet sheet = new RegulationSheet(profile.getNode().getExpression());
+					return sheet.getColorMap().get(node.getExp().get(t).intValue());
+				} else {
+					return profile.getNode().getHit();
+				}
 			}
 		} else if (index.getAnalysis().getType() == AnalysisType.OVERREPRESENTATION
 				|| index.getAnalysis().getType() == AnalysisType.SPECIES_COMPARISON) {
