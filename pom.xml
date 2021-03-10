@@ -4,7 +4,7 @@
 
     <groupId>org.reactome.server.tools</groupId>
     <artifactId>fireworks-exporter</artifactId>
-    <version>1.1.6</version>
+    <version>1.1.7-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Fireworks Exporter</name>
@@ -26,7 +26,7 @@
     </developers>
 
     <properties>
-        <analysis-core>3.3.2</analysis-core>
+        <analysis-core>3.3.7-SNAPSHOT</analysis-core>
         <diagram.reader.version>1.1.6</diagram.reader.version>
 
         <batik.version>1.10</batik.version>
