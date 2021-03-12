@@ -30,7 +30,6 @@
         <diagram.reader.version>1.1.6</diagram.reader.version>
 
         <batik.version>1.10</batik.version>
-        <aspose.version>17.7</aspose.version>
         <logback.version>1.1.10</logback.version>
         <commons.io.version>2.5</commons.io.version>
         <jasp.version>2.1</jasp.version>
@@ -260,17 +259,6 @@
             </releases>
             <snapshots>
                 <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
-        <repository>
-            <id>aspose-maven-repository</id>
-            <url>https://maven.aspose.com/repository/ext-release-local</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
             </snapshots>
         </repository>
 
