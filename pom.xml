@@ -163,10 +163,10 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.reactome.server.tools.fireworks.exporter.DiagramExporter</mainClass>
+                            <mainClass>org.reactome.server.tools.fireworks.exporter.FireworksExporter</mainClass>
                         </manifest>
                     </archive>
-                    <finalName>diagram-exporter</finalName>
+                    <finalName>fireworks-exporter</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
