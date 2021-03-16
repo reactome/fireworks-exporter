@@ -228,10 +228,11 @@ public class FireworksAnalysis {
 			final Node node = index.getNode(id);
 			final double val;
 			if (index.getAnalysis().getType() == AnalysisType.EXPRESSION
-				|| index.getAnalysis().getType() == AnalysisType.GSVA
-				|| index.getAnalysis().getType() == AnalysisType.GSA_STATISTICS) {
+					|| index.getAnalysis().getType() == AnalysisType.GSVA
+					|| index.getAnalysis().getType() == AnalysisType.GSA_STATISTICS) {
 
 				if (node.getExp() == null) continue;
+				if (node.getpValue() > P_VALUE_THRESHOLD) continue;
 
 				final double value = node.getExp().get(col);
 				final double min = getSpeciesResultFiltered().getExpressionSummary().getMin();
@@ -239,6 +240,8 @@ public class FireworksAnalysis {
 				val = 1 - (value - min) / (max - min);
 			} else {
 				if (node.getpValue() == null) continue;
+				if (node.getpValue() > P_VALUE_THRESHOLD) continue;
+
 				double value = node.getpValue();
 				val = value / P_VALUE_THRESHOLD;
 			}
@@ -246,18 +249,24 @@ public class FireworksAnalysis {
 			if (index.getAnalysis().getType() == AnalysisType.GSA_REGULATION) {
 				if (node.getExp() == null) continue;
 				if (node.getpValue() > P_VALUE_THRESHOLD) continue;
-
 				// draw tick
 				Shape box = regulationBars.getShapes().get(node.getExp().get(col).intValue());
-				final Shape line = new Line2D.Double(colorBar.getX(), box.getBounds2D().getCenterY(), colorBar.getMaxX(), box.getBounds2D().getCenterY());
+				final Shape lineInGSA = new Line2D.Double(colorBar.getX(), box.getBounds2D().getCenterY(), colorBar.getMaxX(), box.getBounds2D().getCenterY());
 				// Notice the -1. It puts the arrow over the line
-				final Shape arrow = arrow(colorBar.getMaxX() - 1, box.getBounds2D().getCenterY());
-				canvas.getTicks().add(line, profile.getNode().getSelection(), TICK_STROKE);
-				canvas.getTickArrows().add(arrow, profile.getNode().getSelection());
+				final Shape arrowInGSA = arrow(colorBar.getMaxX() - 1, box.getBounds2D().getCenterY());
+				canvas.getTicks().add(lineInGSA, profile.getNode().getSelection(), TICK_STROKE);
+				canvas.getTickArrows().add(arrowInGSA, profile.getNode().getSelection());
+			} else if (index.getAnalysis().getType() == AnalysisType.EXPRESSION
+					|| index.getAnalysis().getType() == AnalysisType.GSVA
+					|| index.getAnalysis().getType() == AnalysisType.GSA_STATISTICS) {
 
+				final double y = colorBar.getY() + val * colorBar.getHeight();
+				final Shape line = new Line2D.Double(colorBar.getX(), y, colorBar.getMaxX(), y);
+				canvas.getTicks().add(line, profile.getNode().getSelection(), TICK_STROKE);
+				// Notice the -1. It puts the arrow over the line
+				final Shape arrow = arrow(colorBar.getMaxX() - 1, y);
+				canvas.getTickArrows().add(arrow, profile.getNode().getSelection());
 			} else {
-				if (node.getExp() == null) continue;
-				if (node.getpValue() > P_VALUE_THRESHOLD) continue;
 				final double y = colorBar.getY() + val * colorBar.getHeight();
 				final Shape line = new Line2D.Double(colorBar.getX(), y, colorBar.getMaxX(), y);
 				canvas.getTicks().add(line, profile.getNode().getSelection(), TICK_STROKE);
