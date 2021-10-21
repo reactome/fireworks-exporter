@@ -3,10 +3,11 @@ package org.reactome.server.tools;
 
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.commons.io.output.NullOutputStream;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
 import org.reactome.server.analysis.core.result.utils.TokenUtils;
 import org.reactome.server.tools.fireworks.exporter.FireworksExporter;
@@ -24,7 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.fail;
+
 
 /**
  * Unit test for simple FireworksRenderer.
@@ -51,7 +52,7 @@ public class FireworksRendererTest {
 	private static final FireworksExporter exporter = new FireworksExporter(FIREWORK_PATH, ANALYSIS_PATH);
 
 
-	@BeforeClass
+	@BeforeAll
 	public static void beforeClass() {
 		createImageDir();
 		ALL_TOKENS = new ArrayList<>();
@@ -64,7 +65,7 @@ public class FireworksRendererTest {
 			System.err.println("Couldn't create test dir " + IMAGE_FOLDER);
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void afterClass() {
 		if (!save) removeDir(IMAGE_FOLDER);
 	}
@@ -95,7 +96,7 @@ public class FireworksRendererTest {
 			exporter.render(args, os);
 		} catch (AnalysisServerError | TranscoderException | IOException e) {
 			e.printStackTrace();
-			Assert.fail(e.getMessage());
+			Assertions.fail(e.getMessage());
 		}
 	}
 
@@ -183,7 +184,7 @@ public class FireworksRendererTest {
 			exporter.render(args, os);
 		} catch (AnalysisServerError | TranscoderException | IOException e) {
 			e.printStackTrace();
-			Assert.fail(e.getMessage());
+			Assertions.fail(e.getMessage());
 		}
 	}
 
@@ -193,12 +194,12 @@ public class FireworksRendererTest {
 		final AnalysisStoredResult result = new TokenUtils(ANALYSIS_PATH).getFromToken(TOKEN_EXPRESSION_2);
 		try {
 			final OutputStream os = save
-					? new NullOutputStream()
+					? NullOutputStream.NULL_OUTPUT_STREAM
 					: new FileOutputStream(new File(IMAGE_FOLDER, "Homo_sapiens.pdf"));
 			exporter.render(args, result, os);
 		} catch (AnalysisServerError | TranscoderException | IOException e) {
 			e.printStackTrace();
-			Assert.fail(e.getMessage());
+			Assertions.fail(e.getMessage());
 		}
 	}
 
@@ -211,7 +212,7 @@ public class FireworksRendererTest {
 			exporter.render(args, os);
 		} catch (AnalysisServerError | TranscoderException | IOException e) {
 			e.printStackTrace();
-			Assert.fail(e.getMessage());
+			Assertions.fail(e.getMessage());
 		}
 	}
 
@@ -227,7 +228,7 @@ public class FireworksRendererTest {
 			exporter.render(args, os);
 		} catch (AnalysisServerError | TranscoderException | IOException e) {
 			e.printStackTrace();
-			Assert.fail(e.getMessage());
+			Assertions.fail(e.getMessage());
 		}
 	}
 
@@ -242,7 +243,7 @@ public class FireworksRendererTest {
 			exporter.render(args, os);
 		} catch (AnalysisServerError | TranscoderException | IOException e) {
 			e.printStackTrace();
-			Assert.fail(e.getMessage());
+			Assertions.fail(e.getMessage());
 		}
 	}
 
@@ -259,7 +260,7 @@ public class FireworksRendererTest {
 			exporter.render(args, null, os);
 		} catch (AnalysisServerError | IOException e) {
 			e.printStackTrace();
-			Assert.fail(e.getMessage());
+			Assertions.fail(e.getMessage());
 		}
 		catch (TranscoderException ee) {
 			//
@@ -277,7 +278,7 @@ public class FireworksRendererTest {
 			exporter.render(args, os);
 		} catch (AnalysisServerError | TranscoderException | IOException e) {
 			e.printStackTrace();
-			Assert.fail(e.getMessage());
+			Assertions.fail(e.getMessage());
 		}
 	}
 
@@ -290,7 +291,7 @@ public class FireworksRendererTest {
 			exporter.render(args, os);
 		} catch (AnalysisServerError | TranscoderException | IOException e) {
 			e.printStackTrace();
-			Assert.fail(e.getMessage());
+			Assertions.fail(e.getMessage());
 		}
 	}
 
@@ -305,7 +306,7 @@ public class FireworksRendererTest {
 			exporter.render(args, os);
 		} catch (AnalysisServerError | TranscoderException | IOException e) {
 			e.printStackTrace();
-			Assert.fail(e.getMessage());
+			Assertions.fail(e.getMessage());
 		}
 	}
 
@@ -320,7 +321,7 @@ public class FireworksRendererTest {
 					exporter.render(args, os);
 				} catch (AnalysisServerError | TranscoderException | IOException e) {
 					e.printStackTrace();
-					Assert.fail(e.getMessage());
+					Assertions.fail(e.getMessage());
 				}
 			}
 		}
@@ -334,7 +335,7 @@ public class FireworksRendererTest {
 			exporter.renderGif(args, result, outputStream);
 		} catch (IOException | AnalysisServerError e) {
 			e.printStackTrace();
-			fail(e.getMessage());
+			Assertions.fail(e.getMessage());
 		}
 	}
 
@@ -344,7 +345,7 @@ public class FireworksRendererTest {
 			if (save) saveToDisk(filename, args.getFormat(), image);
 		} catch (IOException | AnalysisServerError e) {
 			e.printStackTrace();
-			fail(e.getMessage());
+			Assertions.fail(e.getMessage());
 		}
 	}
 
