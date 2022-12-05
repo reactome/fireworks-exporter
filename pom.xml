@@ -5,7 +5,7 @@
 
     <groupId>org.reactome.server.tools</groupId>
     <artifactId>fireworks-exporter</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.3</version>
     <packaging>jar</packaging>
 
     <name>Fireworks Exporter</name>
@@ -27,7 +27,7 @@
     </developers>
 
     <properties>
-        <analysis-core>3.4.2</analysis-core>
+        <analysis-core>3.4.3</analysis-core>
         <diagram.reader.version>1.2.0</diagram.reader.version>
 
         <batik.version>1.14</batik.version>
@@ -44,7 +44,7 @@
         <main.class>org.reactome.server.tools.fireworks.exporter.FireworksExporter</main.class>
 
         <!--maven build and plugins-->
-        <spring.boot.version>2.6.6</spring.boot.version>
+        <spring.boot.version>2.7.1</spring.boot.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.jar.version>3.2.0</maven.jar.version>
         <maven.source.version>3.2.1</maven.source.version>
