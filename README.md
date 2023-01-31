@@ -16,7 +16,7 @@ Add the dependency:
     <dependency>
         <groupId>org.reactome.server.tools</groupId>
         <artifactId>fireworks-exporter</artifactId>
-        <version>1.1.4</version>
+        <version>1.2.3</version>
     </dependency>
 </dependencies>
 ```
@@ -26,7 +26,7 @@ and the EBI repository:
     <repository>
         <id>nexus-ebi-repo-release</id>
         <name>The EBI internal repository</name>
-        <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
+        <url>https://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
     </repository>
 
 </repositories>
