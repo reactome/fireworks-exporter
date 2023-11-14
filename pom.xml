@@ -5,7 +5,7 @@
 
     <groupId>org.reactome.server.tools</groupId>
     <artifactId>fireworks-exporter</artifactId>
-    <version>1.2.6</version>
+    <version>1.2.7-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Fireworks Exporter</name>
@@ -51,6 +51,7 @@
         <dependency>
             <groupId>org.reactome.server.tools</groupId>
             <artifactId>analysis-core</artifactId>
+            <version>3.4.8-SNAPSHOT</version>
         </dependency>
 
         <dependency>

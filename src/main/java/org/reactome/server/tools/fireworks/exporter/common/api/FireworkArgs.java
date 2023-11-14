@@ -13,6 +13,8 @@ public class FireworkArgs {
 	private Collection<String> flags;
 	private String token;
 	private String resource;
+
+	private boolean importableOnly = false;
 	private Integer column;
 	private Boolean writeTitle;
 	private Integer quality = 5;
@@ -89,6 +91,14 @@ public class FireworkArgs {
 	public FireworkArgs setResource(String resource) {
 		this.resource = resource;
 		return this;
+	}
+
+	public boolean isImportableOnly() {
+		return importableOnly;
+	}
+
+	public void setImportableOnly(boolean importableOnly) {
+		this.importableOnly = importableOnly;
 	}
 
 	public Integer getColumn() {

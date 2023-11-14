@@ -80,7 +80,7 @@ public class FireworksAnalysis {
 		this.resource = ResourceFactory.getMainResource(resource);
 
 //		this.pathwaySummary = AnalysisClient.getPathwaysSummary(pathways, args.getToken(), resource);
-		this.pathwaySummary = result.filterByPathways(pathways, resource);
+		this.pathwaySummary = result.filterByPathways(pathways, resource, args.isImportableOnly());
 		if (type == AnalysisType.EXPRESSION) {
 			expression();
 		} else if (type == AnalysisType.OVERREPRESENTATION
@@ -307,7 +307,7 @@ public class FireworksAnalysis {
 	public SpeciesFilteredResult getSpeciesResultFiltered(){
 		if (this.sfr == null) {
 			String resourceName = resource == null ? "TOTAL" : resource.getName();
-			this.sfr = result.filterBySpecies(this.layout.getSpeciesId(), resourceName);
+			this.sfr = result.filterBySpecies(this.layout.getSpeciesId(), resourceName, args.isImportableOnly());
 		}
 		return sfr;
 	}
