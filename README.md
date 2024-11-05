@@ -5,7 +5,7 @@ Fireworks Exporter
 Exports the pathways overview as raster images.
 
 ### Introduction
-The [fireworks](https://github.com/reactome-pwp/fireworks) project aims to provide 'a genome-wide, hierarchical visualisation of Reactome pathways in a space-filling graph'.
+The [fireworks](https://github.com/reactome/pwp-fireworks) project aims to provide 'a genome-wide, hierarchical visualisation of Reactome pathways in a space-filling graph'.
 The fireworks exporter allows to generate these views in png, jpg or gif and download them into your computer.
 
 ### Install
