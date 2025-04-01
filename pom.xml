@@ -259,7 +259,7 @@
           </execution>
         </executions>
       </plugin>
-<!--      &lt;!&ndash; Nexus staging plugin for Sonatype deployment &ndash;&gt;
+      <!--      &lt;!&ndash; Nexus staging plugin for Sonatype deployment &ndash;&gt;
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
